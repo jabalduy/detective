@@ -12,14 +12,14 @@ func main() {
 	susCollect := CreateSuspects()
 	clueCollect := CreateClue()
 	locCollect := CreateLocations()
+	objCollect := CreateObjects()
 
 	for {
-
 		// Текст меню
 		fmt.Println("")
 		fmt.Println("ДЕЛО №17")
 		fmt.Println("")
-		fmt.Println("1. Исследовать место")
+		fmt.Println("1. Исследовать комнаты")
 		fmt.Println("2. Допросить подозреваемого")
 		fmt.Println("3. Посмотреть улики")
 		fmt.Println("4. Обвинить")
@@ -34,7 +34,7 @@ func main() {
 		switch num {
 		case 1:
 
-			ChooseLocations(locCollect, scanner)
+			ChooseLocations(locCollect, clueCollect, objCollect, scanner)
 
 		case 2:
 

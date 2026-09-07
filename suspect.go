@@ -15,31 +15,31 @@ type Suspect struct {
 func CreateSuspects() []Suspect {
 	susCollect := []Suspect{
 		{
-			Name:  "Joseph",
+			Name:  "Джозеф",
 			Age:   54,
 			About: "Строитель, необщительный, коренастый",
 			Alibi: "Был на работе",
 		},
 		{
-			Name:  "Monica",
+			Name:  "Моника",
 			Age:   36,
 			About: "Повар, качает права, низкая",
 			Alibi: "Была с семьей",
 		},
 		{
-			Name:  "Thomas",
+			Name:  "Томас",
 			Age:   19,
 			About: "Студент, относится несерьезно, высокий",
 			Alibi: "Был на экзамене",
 		},
 		{
-			Name:  "Karen",
+			Name:  "Карен",
 			Age:   49,
 			About: "Бухгалтер, хочет скорее уйти, среднее телосложение",
 			Alibi: "Была на выставке",
 		},
 		{
-			Name:  "Lilian",
+			Name:  "Лилиан",
 			Age:   72,
 			About: "На пенсии, за правосудие, маленькая",
 			Alibi: "Была на рынке",
