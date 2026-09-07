@@ -11,6 +11,7 @@ func main() {
 
 	susCollect := CreateSuspects()
 	clueCollect := CreateClue()
+	locCollect := CreateLocations()
 
 	for {
 
@@ -32,9 +33,8 @@ func main() {
 
 		switch num {
 		case 1:
-			fmt.Println()
-			fmt.Println("Выбрано 1 - Исследовать место")
-			fmt.Println()
+
+			ChooseLocations(locCollect, scanner)
 
 		case 2:
 
