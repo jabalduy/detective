@@ -11,6 +11,7 @@ type GameState struct {
 	Clues     []Clue
 	Locations []Location
 	Objects   []Object
+	Dialogues []Dialogue
 }
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 		Clues:     CreateClue(),
 		Locations: CreateLocations(),
 		Objects:   CreateObjects(),
+		Dialogues: CreateDialogue(),
 	}
 
 	for {
