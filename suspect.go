@@ -84,9 +84,11 @@ func ChooseSus(game *GameState, scanner *bufio.Scanner) {
 			ChooseQuestion(game, choiceSus, scanner)
 
 		} else if choiceSus == 0 {
+			ClearScreen()
 			return
 		} else {
 			fmt.Println("Такого подозреваемого нет")
+			ClearScreen()
 			continue
 		}
 	}

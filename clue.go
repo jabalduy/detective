@@ -85,21 +85,6 @@ func ShowClues(game *GameState, scanner *bufio.Scanner) {
 		fmt.Println("Улики пока не найдены.")
 		fmt.Println()
 	}
-
-	// fmt.Println("0. Назад")
-
-	// // получить число для выхода
-	// exitNum, ok := ReadNumber(scanner)
-	// if !ok {
-	// 	continue
-	// }
-
-	// // выход
-	// if exitNum == 0 {
-	// 	return
-	// } else {
-	// 	continue
-	// }
 }
 
 func FoundClue(game *GameState, objID int) {
@@ -123,7 +108,7 @@ func FoundClue(game *GameState, objID int) {
 }
 
 func PrintStar() {
-	fmt.Println(`
+	fmt.Println(Gold + `
         \   |   /
       '.  \ | /  .'
     ---   * * *   ---
@@ -131,7 +116,7 @@ func PrintStar() {
         /   |   \
 
       НАЙДЕНА УЛИКА
-	  `)
+	  ` + Reset)
 }
 
 func KeyClues(game *GameState) int {

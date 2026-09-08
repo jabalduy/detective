@@ -134,6 +134,7 @@ func CreateObjects() []Object {
 
 func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 	for {
+		ClearScreen()
 
 		// текст выбрать объект
 		fmt.Println()
@@ -159,8 +160,10 @@ func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 		}
 
 		if choiceNum == 0 {
+			ClearScreen()
 			return
 		} else if choiceNum < 1 || choiceNum > len(indexes) {
+			ClearScreen()
 			fmt.Println("Такого предмета нет.")
 			continue
 		} else {

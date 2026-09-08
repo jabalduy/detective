@@ -12,7 +12,6 @@ type GameState struct {
 	Locations []Location
 	Objects   []Object
 	Dialogues []Dialogue
-	End       bool
 }
 
 func main() {
@@ -24,10 +23,11 @@ func main() {
 		Locations: CreateLocations(),
 		Objects:   CreateObjects(),
 		Dialogues: CreateDialogue(),
-		End:       false,
 	}
 
 	PrintIntro()
+	Pause(scanner)
+	ClearScreen()
 
 	for {
 		// Текст меню
@@ -49,18 +49,22 @@ func main() {
 		switch num {
 		case 1:
 
+			ClearScreen()
 			ChooseLocations(&game, scanner)
 
 		case 2:
 
+			ClearScreen()
 			ChooseSus(&game, scanner)
 
 		case 3:
 
+			ClearScreen()
 			ShowCaseFile(&game, scanner)
 
 		case 4:
 
+			ClearScreen()
 			if ChooseAccused(&game, scanner) {
 				return
 			} else {

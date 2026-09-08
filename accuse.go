@@ -20,22 +20,27 @@ func ChooseAccused(game *GameState, scanner *bufio.Scanner) bool {
 
 		choiceAc, ok := ReadNumber(scanner)
 		if !ok {
+			ClearScreen()
 			fmt.Println("Неверный ввод")
 			continue
 		}
 
 		if choiceAc < 0 || choiceAc > len(game.Suspects) {
+			ClearScreen()
 			fmt.Println("Неверный ввод")
 			continue
 		}
 
 		if choiceAc == 0 {
+			ClearScreen()
 			return false
 		}
 
+		ClearScreen()
 		if Sure(game, choiceAc, scanner) {
 			return true
 		} else {
+			ClearScreen()
 			continue
 		}
 	}
@@ -52,21 +57,26 @@ func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
 
 		choiceSure, ok := ReadNumber(scanner)
 		if !ok {
+			ClearScreen()
 			fmt.Println("Неверный ввод")
 			continue
 		}
 
 		if choiceSure < 0 || choiceSure > 1 {
+			ClearScreen()
 			fmt.Println("Неверный ввод")
 			continue
 		}
 
+		ClearScreen()
 		if choiceSure == 1 {
+			ClearScreen()
 			Accuse(choiceAc, game)
 			return true
 		}
 
 		if choiceSure == 0 {
+			ClearScreen()
 			return false
 		}
 	}
@@ -118,7 +128,7 @@ func WinEnding() {
 	fmt.Println("Я не собиралась его убивать.»")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println("              CASE CLOSED")
+	fmt.Println(Green + "              CASE CLOSED" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }
@@ -149,7 +159,7 @@ func UnsolvedEnding() {
 	fmt.Println("Но знать — недостаточно.")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println("             CASE UNSOLVED")
+	fmt.Println(Red + "             CASE UNSOLVED" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }
@@ -171,7 +181,7 @@ func FailedEnding() {
 	fmt.Println("настоящий убийца остался на свободе.")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println("              CASE FAILED")
+	fmt.Println(Red + "              CASE FAILED" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }

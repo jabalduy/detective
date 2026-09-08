@@ -16,6 +16,8 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 		// ИСТОРИЯ
 
 		PrintIntro()
+		Pause(scanner)
+		ClearScreen()
 
 		// ПРОГРЕСС
 
@@ -85,6 +87,7 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 		}
 
 		if choiceNum == 0 {
+			ClearScreen()
 			return
 		}
 

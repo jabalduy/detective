@@ -36,6 +36,7 @@ func CreateLocations() []Location {
 func ChooseLocations(game *GameState, scanner *bufio.Scanner) {
 
 	for {
+		ClearScreen()
 
 		// текст выбрать  локации
 		fmt.Println()
@@ -68,8 +69,10 @@ func ChooseLocations(game *GameState, scanner *bufio.Scanner) {
 
 			fmt.Println()
 		} else if choiceLoc == 0 {
+			ClearScreen()
 			return
 		} else {
+			ClearScreen()
 			fmt.Println("Такого места нет.")
 			continue
 		}

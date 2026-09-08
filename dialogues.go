@@ -20,6 +20,7 @@ type Dialogue struct {
 
 func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 	for {
+		ClearScreen()
 
 		fmt.Println()
 		fmt.Println("=========")
@@ -48,10 +49,12 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 		// получить число
 		choiceDial, ok := ReadNumber(scanner)
 		if !ok {
+			ClearScreen()
 			continue
 		}
 
 		if choiceDial == 0 {
+			ClearScreen()
 			return
 		}
 
@@ -66,6 +69,8 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 				fmt.Println()
 				fmt.Println(dial.Answer)
 				fmt.Println()
+				Pause(scanner)
+				ClearScreen()
 
 				game.Dialogues[i].Asked = true
 				continue
@@ -73,6 +78,7 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 		}
 
 		if !found {
+			ClearScreen()
 			fmt.Println("Неизвестная команда")
 			break
 		}
