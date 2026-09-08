@@ -64,7 +64,7 @@ func ChooseLocations(game *GameState, scanner *bufio.Scanner) {
 			fmt.Println()
 			fmt.Println(game.Locations[choiceLoc-1].About)
 
-			ChooseObjects(game.Objects, game.Clues, scanner, choiceLoc)
+			ChooseObjects(game, scanner, choiceLoc)
 
 			fmt.Println()
 		} else if choiceLoc == 0 {

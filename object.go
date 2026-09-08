@@ -130,7 +130,7 @@ func CreateObjects() []Object {
 	return objCollect
 }
 
-func ChooseObjects(objCol []Object, cluesCol []Clue, scanner *bufio.Scanner, choiceLoc int) {
+func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 	for {
 
 		// текст выбрать объект
@@ -138,7 +138,7 @@ func ChooseObjects(objCol []Object, cluesCol []Clue, scanner *bufio.Scanner, cho
 		fmt.Println("Предметы в комнате:")
 		count := 0
 		indexes := []int{}
-		for i, obj := range objCol {
+		for i, obj := range game.Objects {
 			if obj.LocID == choiceLoc {
 				indexes = append(indexes, i)
 				count += 1
@@ -164,53 +164,53 @@ func ChooseObjects(objCol []Object, cluesCol []Clue, scanner *bufio.Scanner, cho
 		} else {
 			// подогнать выбранный номер под комнату
 			realIndex := indexes[choiceNum-1]
-			ShowObject(objCol, cluesCol, realIndex, scanner)
+			ShowObject(game, realIndex, scanner)
 			continue
 		}
 	}
 }
 
-func ShowObject(objCol []Object, cluesCol []Clue, realIndex int, scanner *bufio.Scanner) {
+func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 	for {
 
 		// показать инфу
 		// не осматривали, найдена улика
-		if objCol[realIndex].Searched == false &&
-			objCol[realIndex].IsClue {
-			objCol[realIndex].Searched = true
+		if game.Objects[realIndex].Searched == false &&
+			game.Objects[realIndex].IsClue {
+			game.Objects[realIndex].Searched = true
 			fmt.Println()
 			fmt.Println("====================")
-			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
 			fmt.Println("====================")
 			fmt.Println()
-			fmt.Println(objCol[realIndex].About)
+			fmt.Println(game.Objects[realIndex].About)
 
-			FoundClue(cluesCol, objCol[realIndex].ObjID)
+			FoundClue(game, game.Objects[realIndex].ObjID)
 
 			fmt.Println()
 			fmt.Println("0. Назад")
 			fmt.Println()
 
 			// не осматривали, нет улики
-		} else if objCol[realIndex].Searched == false &&
-			objCol[realIndex].IsClue == false {
-			objCol[realIndex].Searched = true
+		} else if game.Objects[realIndex].Searched == false &&
+			game.Objects[realIndex].IsClue == false {
+			game.Objects[realIndex].Searched = true
 			fmt.Println()
 			fmt.Println("====================")
-			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
 			fmt.Println("====================")
 			fmt.Println()
-			fmt.Println(objCol[realIndex].About)
+			fmt.Println(game.Objects[realIndex].About)
 			fmt.Println()
 			fmt.Println("0. Назад")
 			fmt.Println()
 
 			// осматривали, была улика
-		} else if objCol[realIndex].Searched == true &&
-			objCol[realIndex].IsClue == true {
+		} else if game.Objects[realIndex].Searched == true &&
+			game.Objects[realIndex].IsClue == true {
 			fmt.Println()
 			fmt.Println("====================")
-			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
 			fmt.Println("====================")
 			fmt.Println()
 			fmt.Println("Вы уже осматривали это место.\nВсе важные находки отсюда уже добавлены в список улик.")
@@ -219,11 +219,11 @@ func ShowObject(objCol []Object, cluesCol []Clue, realIndex int, scanner *bufio.
 			fmt.Println()
 
 			// осматривали, не было улики
-		} else if objCol[realIndex].Searched == true &&
-			objCol[realIndex].IsClue == false {
+		} else if game.Objects[realIndex].Searched == true &&
+			game.Objects[realIndex].IsClue == false {
 			fmt.Println()
 			fmt.Println("====================")
-			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
 			fmt.Println("====================")
 			fmt.Println()
 			fmt.Println("Вы внимательно осматривали это место раньше.\nНичего нового обнаружить не удалось.")

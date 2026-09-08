@@ -6,11 +6,12 @@ import (
 )
 
 type Suspect struct {
-	Name  string
-	Age   int
-	About string
-	Alibi string
-	SusID int
+	Name   string
+	Age    int
+	About  string
+	Alibi  string
+	SusID  int
+	IsClue bool
 }
 
 func CreateSuspects() []Suspect {
@@ -79,17 +80,7 @@ func ChooseSus(game *GameState, scanner *bufio.Scanner) {
 
 		// показать инфу
 		if choiceSus > 0 && choiceSus <= len(game.Suspects) {
-			fmt.Println()
-			fmt.Println("=========")
-			fmt.Printf("%s, %d\n", game.Suspects[choiceSus-1].Name, game.Suspects[choiceSus-1].Age)
-			fmt.Println("=========")
-			fmt.Println()
-			fmt.Println("Известно:")
-			fmt.Println(game.Suspects[choiceSus-1].About)
-			fmt.Println()
-			fmt.Println("Алиби:")
-			fmt.Println(game.Suspects[choiceSus-1].Alibi)
-			fmt.Println()
+
 			ChooseQuestion(game, choiceSus, scanner)
 
 		} else if choiceSus == 0 {

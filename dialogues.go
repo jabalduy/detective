@@ -10,21 +10,34 @@ type Dialogue struct {
 	DialID   int
 	Question string
 	Answer   string
+	IsClue   bool
+	IsOpen   bool
+	ObjID    int
 }
 
 func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 	for {
 		// fmt.Println()
-		// fmt.Println("=========")
-		// fmt.Printf("%s, %d\n", game.Suspects[choiceSus-1].Name, game.Suspects[choiceSus-1].Age)
-		// fmt.Println("=========")
+		// fmt.Println("ДОПРОСИТЬ:")
 		// fmt.Println()
-		// fmt.Println("Известно:")
-		// fmt.Println(game.Suspects[choiceSus-1].About)
+		// fmt.Println("1. Где вы были вечером убийства?")
+		// fmt.Println("2. Какие у вас были отношения с Эдвардом?")
+		// fmt.Println("3. Видели ли вы что-нибудь подозрительное?")
 		// fmt.Println()
-		// fmt.Println("Алиби:")
-		// fmt.Println(game.Suspects[choiceSus-1].Alibi)
+		// fmt.Println("0. Закончить допрос")
 		// fmt.Println()
+
+		fmt.Println()
+		fmt.Println("=========")
+		fmt.Printf("%s, %d\n", game.Suspects[choiceSus-1].Name, game.Suspects[choiceSus-1].Age)
+		fmt.Println("=========")
+		fmt.Println()
+		fmt.Println("Известно:")
+		fmt.Println(game.Suspects[choiceSus-1].About)
+		fmt.Println()
+		fmt.Println("Алиби:")
+		fmt.Println(game.Suspects[choiceSus-1].Alibi)
+		fmt.Println()
 
 		fmt.Println()
 		fmt.Println("ДОПРОСИТЬ:")
@@ -32,6 +45,11 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 		fmt.Println("1. Где вы были вечером убийства?")
 		fmt.Println("2. Какие у вас были отношения с Эдвардом?")
 		fmt.Println("3. Видели ли вы что-нибудь подозрительное?")
+		for _, dial := range game.Dialogues {
+			if dial.IsClue && choiceSus == dial.SusID {
+				fmt.Println("4. Вопрос по улике")
+			}
+		}
 		fmt.Println()
 		fmt.Println("0. Закончить допрос")
 		fmt.Println()
@@ -48,26 +66,15 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 
 		found := false
 		for _, dial := range game.Dialogues {
-			if choiceSus == dial.SusID && choiceDial == dial.DialID {
+			if choiceSus == dial.SusID && choiceDial == dial.DialID && dial.IsOpen {
 				found = true
-
-				fmt.Println()
-				fmt.Println("=========")
-				fmt.Printf("%s, %d\n", game.Suspects[choiceSus-1].Name, game.Suspects[choiceSus-1].Age)
-				fmt.Println("=========")
-				fmt.Println()
-				fmt.Println("Известно:")
-				fmt.Println(game.Suspects[choiceSus-1].About)
-				fmt.Println()
-				fmt.Println("Алиби:")
-				fmt.Println(game.Suspects[choiceSus-1].Alibi)
-				fmt.Println()
 
 				fmt.Println()
 				fmt.Println(dial.Question)
 				fmt.Println()
 				fmt.Println(dial.Answer)
 				fmt.Println()
+
 				break
 			}
 		}
@@ -76,6 +83,7 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 			fmt.Println("Неизвестная команда")
 			break
 		}
+
 	}
 }
 
@@ -91,6 +99,8 @@ func CreateDialogue() []Dialogue {
 			Answer: "👷: Закончил примерно без двадцати девять.\n" +
 				"Собрал инструменты и ушёл через задний вход.\n" +
 				"Больше мне здесь делать было нечего.",
+			IsOpen: true,
+			IsClue: false,
 		},
 		{
 			SusID:  1,
@@ -108,6 +118,18 @@ func CreateDialogue() []Dialogue {
 				"или что-нибудь необычное?",
 			Answer: "👷: Нет. Я был занят работой.\n" +
 				"Закончил и ушёл. За остальными не следил.",
+		},
+		{
+			SusID:  1,
+			DialID: 4,
+			Question: "🕵: Часы Эдварда остановились на 20:37.\n" +
+				"Вы уверены, что находились в доме примерно до 20:40?",
+			Answer: "👷: Я не смотрел на часы, когда уходил.\n" +
+				"Сказал «без двадцати девять» примерно.\n" +
+				"Может, ушёл раньше. Минут на десять или пятнадцать.",
+			IsClue: false,
+			IsOpen: false,
+			ObjID:  9,
 		},
 
 		// МОНИКА
@@ -136,6 +158,17 @@ func CreateDialogue() []Dialogue {
 				"А позже я видела Карен возле кухни.\n" +
 				"Спросила, что она здесь делает, а она сказала, что ищет туалет.",
 		},
+		{
+			SusID:  2,
+			DialID: 4,
+			Question: "🕵: Кухонные часы спешат на одиннадцать минут.\n" +
+				"Когда вы сказали «половина девятого», вы смотрели именно на них?",
+			Answer: "👩‍🍳: Да. Я другого времени тогда не проверяла.\n" +
+				"Если они спешат, значит, Томаса я видела раньше, чем думала.",
+			IsClue: false,
+			IsOpen: false,
+			ObjID:  5,
+		},
 
 		// ТОМАС
 		{
@@ -162,6 +195,18 @@ func CreateDialogue() []Dialogue {
 				"вы слышали или видели что-нибудь странное?",
 			Answer: "🧑‍🎓: Нет. Я почти всё время сидел над конспектами.\n" +
 				"Если в доме что-то и происходило, я этого не заметил.",
+		},
+		{
+			SusID:  3,
+			DialID: 4,
+			Question: "🕵: В вашей книге есть карточка выдачи с подписью Эдварда.\n" +
+				"Значит, вы не пытались её украсть. Почему тогда вы скрывали причину визита?",
+			Answer: "🧑‍🎓: Потому что я приехал не только из-за книги.\n" +
+				"Я должен был встретиться с Эмили.\n" +
+				"Эдвард был против наших отношений, и я не хотел об этом рассказывать.",
+			IsClue: false,
+			IsOpen: false,
+			ObjID:  1,
 		},
 
 		// КАРЕН
@@ -191,6 +236,20 @@ func CreateDialogue() []Dialogue {
 			Answer: "👩‍💼: Нет. Я даже не заходила в библиотеку.\n" +
 				"Мне сказали, что Эдвард занят,\n" +
 				"поэтому я решила не мешать.",
+		},
+		{
+			SusID:  4,
+			DialID: 4,
+			Question: "🕵: В камине библиотеки найден обгоревший счёт:\n" +
+				"MORRIS CONSULTING, £4,800.\n" +
+				"Как он туда попал?",
+			Answer: "👩‍💼: Понятия не имею.\n" +
+				"Я веду множество документов Эдварда.\n" +
+				"Название фирмы мне знакомо, но почему этот счёт оказался в камине —" +
+				"спрашивать нужно не меня.",
+			IsClue: false,
+			IsOpen: false,
+			ObjID:  12,
 		},
 
 		// ЛИЛИАН

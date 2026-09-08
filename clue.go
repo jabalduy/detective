@@ -94,13 +94,22 @@ func ShowClues(game *GameState, scanner *bufio.Scanner) {
 	}
 }
 
-func FoundClue(cluesCol []Clue, objID int) {
-	for index, clue := range cluesCol {
+func FoundClue(game *GameState, objID int) {
+	for index, clue := range game.Clues {
 		if clue.ObjID == objID {
 			PrintStar()
 			fmt.Printf("%s:\n", clue.Name)
 			fmt.Println(clue.About)
-			cluesCol[index].Found = true
+			game.Clues[index].Found = true
+			for i, dial := range game.Dialogues {
+				if dial.ObjID == clue.ObjID {
+					game.Dialogues[i].IsClue = true
+					game.Dialogues[i].IsOpen = true
+					fmt.Println()
+					fmt.Println("💭 Новые диалоги разблокированы!")
+					fmt.Println()
+				}
+			}
 		}
 	}
 }
