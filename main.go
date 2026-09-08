@@ -12,6 +12,7 @@ type GameState struct {
 	Locations []Location
 	Objects   []Object
 	Dialogues []Dialogue
+	End       bool
 }
 
 func main() {
@@ -23,7 +24,10 @@ func main() {
 		Locations: CreateLocations(),
 		Objects:   CreateObjects(),
 		Dialogues: CreateDialogue(),
+		End:       false,
 	}
+
+	PrintIntro()
 
 	for {
 		// Текст меню
@@ -56,9 +60,13 @@ func main() {
 			ShowCaseFile(&game, scanner)
 
 		case 4:
-			fmt.Println()
-			fmt.Println("Выбрано 4 - Обвинить")
-			fmt.Println()
+
+			if ChooseAccused(&game, scanner) {
+				return
+			} else {
+				continue
+			}
+
 		case 5:
 			fmt.Println()
 			fmt.Println("Выбрано 5 - Выйти")

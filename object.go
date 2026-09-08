@@ -12,6 +12,7 @@ type Object struct {
 	Searched bool
 	ObjID    int
 	IsClue   bool
+	Key      bool
 }
 
 func CreateObjects() []Object {
@@ -30,7 +31,7 @@ func CreateObjects() []Object {
 			ObjID:    2,
 			LocID:    1,
 			Name:     "📚  Учебники",
-			About:    "Учебники по истории и несколько листов с конспектами.\nСудя по записям, Томас действительно готовился к экзамену.",
+			About:    "Редкие книги по истории и несколько листов с конспектами.\nСудя по записям, Томас готовился с ними к экзамену.",
 			Searched: false,
 			IsClue:   false,
 		},
@@ -125,6 +126,7 @@ func CreateObjects() []Object {
 			About:    "Стеклянная витрина не повреждена, но одна полка пуста.\nНа табличке указано: «The Black Orchard. First edition».\nЗамок цел. Следов взлома нет.",
 			Searched: false,
 			IsClue:   false,
+			Key:      true,
 		},
 	}
 	return objCollect
@@ -244,4 +246,14 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			continue
 		}
 	}
+}
+
+func KeyObj(game *GameState) int {
+	keys := 0
+	for _, obj := range game.Objects {
+		if obj.Key && obj.Searched {
+			keys += 1
+		}
+	}
+	return keys
 }
