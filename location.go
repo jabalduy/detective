@@ -33,14 +33,14 @@ func CreateLocations() []Location {
 	return locCollect
 }
 
-func ChooseLocations(locCol []Location, cluesCol []Clue, objCol []Object, scanner *bufio.Scanner) {
+func ChooseLocations(game *GameState, scanner *bufio.Scanner) {
 
 	for {
 
 		// текст выбрать  локации
 		fmt.Println()
 		fmt.Println("Комнаты:")
-		for i, loc := range locCol {
+		for i, loc := range game.Locations {
 			fmt.Printf("%d. %s\n", i+1, loc.Name)
 		}
 		fmt.Println()
@@ -56,15 +56,15 @@ func ChooseLocations(locCol []Location, cluesCol []Clue, objCol []Object, scanne
 		}
 
 		// показать инфу
-		if choiceLoc > 0 && choiceLoc <= len(locCol) {
+		if choiceLoc > 0 && choiceLoc <= len(game.Locations) {
 			fmt.Println()
 			fmt.Println("=======================")
-			fmt.Printf("%s:\n", locCol[choiceLoc-1].Name)
+			fmt.Printf("%s:\n", game.Locations[choiceLoc-1].Name)
 			fmt.Println("=======================")
 			fmt.Println()
-			fmt.Println(locCol[choiceLoc-1].About)
+			fmt.Println(game.Locations[choiceLoc-1].About)
 
-			ChooseObjects(objCol, cluesCol, scanner, choiceLoc)
+			ChooseObjects(game.Objects, game.Clues, scanner, choiceLoc)
 
 			fmt.Println()
 		} else if choiceLoc == 0 {

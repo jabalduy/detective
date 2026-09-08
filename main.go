@@ -6,13 +6,22 @@ import (
 	"os"
 )
 
+type GameState struct {
+	Suspects  []Suspect
+	Clues     []Clue
+	Locations []Location
+	Objects   []Object
+}
+
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	susCollect := CreateSuspects()
-	clueCollect := CreateClue()
-	locCollect := CreateLocations()
-	objCollect := CreateObjects()
+	game := GameState{
+		Suspects:  CreateSuspects(),
+		Clues:     CreateClue(),
+		Locations: CreateLocations(),
+		Objects:   CreateObjects(),
+	}
 
 	for {
 		// Текст меню
@@ -34,15 +43,15 @@ func main() {
 		switch num {
 		case 1:
 
-			ChooseLocations(locCollect, clueCollect, objCollect, scanner)
+			ChooseLocations(&game, scanner)
 
 		case 2:
 
-			ChooseSus(susCollect, scanner)
+			ChooseSus(&game, scanner)
 
 		case 3:
 
-			ShowClues(clueCollect, scanner)
+			ShowClues(&game, scanner)
 
 		case 4:
 			fmt.Println()

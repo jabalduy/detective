@@ -54,7 +54,7 @@ func CreateClue() []Clue {
 	return clueCollect
 }
 
-func ShowClues(cluesCol []Clue, scanner *bufio.Scanner) {
+func ShowClues(game *GameState, scanner *bufio.Scanner) {
 	for {
 
 		// показать найденные улики
@@ -64,7 +64,7 @@ func ShowClues(cluesCol []Clue, scanner *bufio.Scanner) {
 		fmt.Println("=========")
 		fmt.Println()
 		count := 0
-		for _, clue := range cluesCol {
+		for _, clue := range game.Clues {
 			if clue.Found {
 				count += 1
 				fmt.Printf("%d. %s\n", count, clue.Name)
