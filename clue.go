@@ -10,6 +10,7 @@ type Clue struct {
 	About string
 	Found bool
 	ObjID int
+	Key   bool
 }
 
 func CreateClue() []Clue {
@@ -37,61 +38,60 @@ func CreateClue() []Clue {
 			About: "Первое издание «The Black Orchard»,\nякобы украденное из библиотеки.\nКнига была спрятана за задней панелью кухонного шкафа и не покидала дом.",
 			Found: false,
 			ObjID: 7,
+			Key:   true,
 		},
 		{
 			Name:  "⌚️  Разбитые часы",
 			About: "Наручные часы Эдварда разбиты при падении.\nСтрелки остановились на 20:37.",
 			Found: false,
 			ObjID: 9,
+			Key:   true,
 		},
 		{
 			Name:  "📜  Обгоревший документ",
 			About: "Фрагмент финансового документа, найденный в камине библиотеки.\nНа нём сохранились надписи\n«MORRIS CONSULTING»,\n«Invoice #0417»\nи сумма £4,800.",
 			Found: false,
 			ObjID: 12,
+			Key:   true,
 		},
 	}
 	return clueCollect
 }
 
 func ShowClues(game *GameState, scanner *bufio.Scanner) {
-	for {
 
-		// показать найденные улики
-		fmt.Println()
-		fmt.Println("=========")
-		fmt.Println("Улики:")
-		fmt.Println("=========")
-		fmt.Println()
-		count := 0
-		for _, clue := range game.Clues {
-			if clue.Found {
-				count += 1
-				fmt.Printf("%d. %s\n", count, clue.Name)
-				fmt.Println(clue.About)
-				fmt.Println()
-			}
-		}
-		if count == 0 {
-			fmt.Println("Улики пока не найдены.")
+	// показать найденные улики
+	fmt.Println()
+	fmt.Println("УЛИКИ")
+	fmt.Println()
+	count := 0
+	for _, clue := range game.Clues {
+		if clue.Found {
+			count += 1
+			fmt.Printf("%d. %s\n", count, clue.Name)
+			fmt.Println(clue.About)
 			fmt.Println()
 		}
-
-		fmt.Println("0. Назад")
-
-		// получить число для выхода
-		exitNum, ok := ReadNumber(scanner)
-		if !ok {
-			continue
-		}
-
-		// выход
-		if exitNum == 0 {
-			return
-		} else {
-			continue
-		}
 	}
+	if count == 0 {
+		fmt.Println("Улики пока не найдены.")
+		fmt.Println()
+	}
+
+	// fmt.Println("0. Назад")
+
+	// // получить число для выхода
+	// exitNum, ok := ReadNumber(scanner)
+	// if !ok {
+	// 	continue
+	// }
+
+	// // выход
+	// if exitNum == 0 {
+	// 	return
+	// } else {
+	// 	continue
+	// }
 }
 
 func FoundClue(game *GameState, objID int) {
@@ -125,3 +125,8 @@ func PrintStar() {
       НАЙДЕНА УЛИКА
 	  `)
 }
+
+// func KeyClues() {
+// 	keys := []int{}
+// 	for i, clue in
+// }

@@ -32,7 +32,7 @@ func main() {
 		fmt.Println("")
 		fmt.Println("1. Исследовать комнаты")
 		fmt.Println("2. Допросить подозреваемого")
-		fmt.Println("3. Посмотреть улики")
+		fmt.Println("3. Открыть Досье")
 		fmt.Println("4. Обвинить")
 		fmt.Println("5. Выйти")
 		fmt.Println("")
@@ -53,7 +53,7 @@ func main() {
 
 		case 3:
 
-			ShowClues(&game, scanner)
+			ShowCaseFile(&game, scanner)
 
 		case 4:
 			fmt.Println()
