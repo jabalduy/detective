@@ -167,6 +167,7 @@ func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 			fmt.Println("Такого предмета нет.")
 			continue
 		} else {
+			ClearScreen()
 			// подогнать выбранный номер под комнату
 			realIndex := indexes[choiceNum-1]
 			ShowObject(game, realIndex, scanner)
@@ -192,9 +193,13 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 
 			FoundClue(game, game.Objects[realIndex].ObjID)
 
-			fmt.Println()
-			fmt.Println("0. Назад")
-			fmt.Println()
+			Pause(scanner)
+			ClearScreen()
+			return
+
+			// fmt.Println()
+			// fmt.Println("0. Назад")
+			// fmt.Println()
 
 			// не осматривали, нет улики
 		} else if game.Objects[realIndex].Searched == false &&
@@ -206,9 +211,14 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			fmt.Println("====================")
 			fmt.Println()
 			fmt.Println(game.Objects[realIndex].About)
-			fmt.Println()
-			fmt.Println("0. Назад")
-			fmt.Println()
+
+			Pause(scanner)
+			ClearScreen()
+			return
+
+			// fmt.Println()
+			// fmt.Println("0. Назад")
+			// fmt.Println()
 
 			// осматривали, была улика
 		} else if game.Objects[realIndex].Searched == true &&
@@ -219,9 +229,14 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			fmt.Println("====================")
 			fmt.Println()
 			fmt.Println("Вы уже осматривали это место.\nВсе важные находки отсюда уже добавлены в список улик.")
-			fmt.Println()
-			fmt.Println("0. Назад")
-			fmt.Println()
+
+			Pause(scanner)
+			ClearScreen()
+			return
+
+			// fmt.Println()
+			// fmt.Println("0. Назад")
+			// fmt.Println()
 
 			// осматривали, не было улики
 		} else if game.Objects[realIndex].Searched == true &&
@@ -232,22 +247,27 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			fmt.Println("====================")
 			fmt.Println()
 			fmt.Println("Вы внимательно осматривали это место раньше.\nНичего нового обнаружить не удалось.")
-			fmt.Println()
-			fmt.Println("0. Назад")
-			fmt.Println()
+
+			Pause(scanner)
+			ClearScreen()
+			return
+
+			// fmt.Println()
+			// fmt.Println("0. Назад")
+			// fmt.Println()
 		}
 		// получить число
-		choiceNum, ok := ReadNumber(scanner)
-		if !ok {
-			fmt.Println("Неверный ввод")
-			continue
-		}
+		// choiceNum, ok := ReadNumber(scanner)
+		// if !ok {
+		// 	fmt.Println("Неверный ввод")
+		// 	continue
+		// }
 
-		if choiceNum == 0 {
-			return
-		} else {
-			continue
-		}
+		// if choiceNum == 0 {
+		// 	return
+		// } else {
+		// 	continue
+		// }
 	}
 }
 

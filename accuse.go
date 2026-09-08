@@ -71,7 +71,7 @@ func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
 		ClearScreen()
 		if choiceSure == 1 {
 			ClearScreen()
-			Accuse(choiceAc, game)
+			Accuse(choiceAc, game, scanner)
 			return true
 		}
 
@@ -82,13 +82,16 @@ func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
 	}
 }
 
-func Accuse(choiceAc int, game *GameState) {
+func Accuse(choiceAc int, game *GameState, scanner *bufio.Scanner) {
 	if KeyClues(game)+KeyDial(game)+KeyObj(game) == 7 && choiceAc == 4 {
 		WinEnding()
+		Pause(scanner)
 	} else if KeyClues(game)+KeyDial(game)+KeyObj(game) < 7 && choiceAc == 4 {
 		UnsolvedEnding()
+		Pause(scanner)
 	} else if KeyClues(game)+KeyDial(game)+KeyObj(game) < 7 && choiceAc != 4 {
 		FailedEnding()
+		Pause(scanner)
 	}
 }
 
@@ -128,7 +131,7 @@ func WinEnding() {
 	fmt.Println("Я не собиралась его убивать.»")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println(Green + "              CASE CLOSED" + Reset)
+	fmt.Println(Green + "              ДЕЛО ЗАКРЫТО" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }
@@ -159,7 +162,7 @@ func UnsolvedEnding() {
 	fmt.Println("Но знать — недостаточно.")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println(Red + "             CASE UNSOLVED" + Reset)
+	fmt.Println(Red + "             НЕДОСТАТОЧНО УЛИК" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }
@@ -181,7 +184,7 @@ func FailedEnding() {
 	fmt.Println("настоящий убийца остался на свободе.")
 	fmt.Println()
 	fmt.Println("========================================")
-	fmt.Println(Red + "              CASE FAILED" + Reset)
+	fmt.Println(Red + "              ДЕЛО ПРОВАЛЕНО" + Reset)
 	fmt.Println("========================================")
 	fmt.Println()
 }

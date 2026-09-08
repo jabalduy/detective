@@ -23,9 +23,9 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 		ClearScreen()
 
 		fmt.Println()
-		fmt.Println("=========")
+		fmt.Println("=====================")
 		fmt.Printf("%s, %d\n", game.Suspects[choiceSus-1].Name, game.Suspects[choiceSus-1].Age)
-		fmt.Println("=========")
+		fmt.Println("=====================")
 		fmt.Println()
 		fmt.Println("Известно:")
 		fmt.Println(game.Suspects[choiceSus-1].About)
