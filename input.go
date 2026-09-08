@@ -22,7 +22,7 @@ func ReadNumber(scanner *bufio.Scanner) (int, bool) {
 
 	num, err := strconv.Atoi(text)
 	if err != nil {
-		fmt.Println("Ошибка преобразования!", err)
+		fmt.Println("Ошибка преобразования!")
 		valid = false
 	}
 

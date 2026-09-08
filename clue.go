@@ -15,37 +15,37 @@ type Clue struct {
 func CreateClue() []Clue {
 	clueCollect := []Clue{
 		{
-			Name:  "Карточка выдачи",
+			Name:  "🪪  Карточка выдачи",
 			About: "В книге из рюкзака Томаса обнаружена карточка:\n«Томасу - вернуть в пятницу».\nНиже стоит подпись Эдварда Вейла.",
 			Found: false,
 			ObjID: 1,
 		},
 		{
-			Name:  "Письмо Эмили",
+			Name:  "💌  Письмо Эмили",
 			About: "Личное письмо Томаса к Эмили.\nОно подтверждает, что Томас скрывал их отношения\nи планировал встретиться с ней вечером.",
 			Found: false,
 			ObjID: 3,
 		},
 		{
-			Name:  "Кухонные часы",
+			Name:  "🕰️   Кухонные часы",
 			About: "Часы на кухне спешат ровно на 11 минут.",
 			Found: false,
 			ObjID: 5,
 		},
 		{
-			Name:  "Пропавшая книга",
+			Name:  "📙  Пропавшая книга",
 			About: "Первое издание «The Black Orchard»,\nякобы украденное из библиотеки.\nКнига была спрятана за задней панелью кухонного шкафа и не покидала дом.",
 			Found: false,
 			ObjID: 7,
 		},
 		{
-			Name:  "Разбитые часы",
+			Name:  "⌚️  Разбитые часы",
 			About: "Наручные часы Эдварда разбиты при падении.\nСтрелки остановились на 20:37.",
 			Found: false,
 			ObjID: 9,
 		},
 		{
-			Name:  "Обгоревший документ",
+			Name:  "📜  Обгоревший документ",
 			About: "Фрагмент финансового документа, найденный в камине библиотеки.\nНа нём сохранились надписи\n«MORRIS CONSULTING»,\n«Invoice #0417»\nи сумма £4,800.",
 			Found: false,
 			ObjID: 12,
@@ -59,7 +59,9 @@ func ShowClues(cluesCol []Clue, scanner *bufio.Scanner) {
 
 		// показать найденные улики
 		fmt.Println()
+		fmt.Println("=========")
 		fmt.Println("Улики:")
+		fmt.Println("=========")
 		fmt.Println()
 		count := 0
 		for _, clue := range cluesCol {
@@ -96,7 +98,7 @@ func FoundClue(cluesCol []Clue, objID int) {
 	for index, clue := range cluesCol {
 		if clue.ObjID == objID {
 			PrintStar()
-			fmt.Println(clue.Name)
+			fmt.Printf("%s:\n", clue.Name)
 			fmt.Println(clue.About)
 			cluesCol[index].Found = true
 		}

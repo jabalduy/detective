@@ -53,7 +53,10 @@ func ChooseSus(susCol []Suspect, scanner *bufio.Scanner) {
 
 		// текст выбрать подозреваемого
 		fmt.Println()
+		fmt.Println("=========")
 		fmt.Println("Подозреваемые:")
+		fmt.Println("=========")
+		fmt.Println()
 		for i, sus := range susCol {
 			fmt.Printf("%d. %s, %d\n", i+1, sus.Name, sus.Age)
 		}

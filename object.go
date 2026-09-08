@@ -21,7 +21,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    1,
 			LocID:    1,
-			Name:     "Диван",
+			Name:     "🛋️   Диван",
 			About:    "На диване лежит рюкзак Томаса.\nВнутри находится старая книга из коллекции Эдварда.",
 			Searched: false,
 			IsClue:   true,
@@ -29,7 +29,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    2,
 			LocID:    1,
-			Name:     "Учебники",
+			Name:     "📚  Учебники",
 			About:    "Учебники по истории и несколько листов с конспектами.\nСудя по записям, Томас действительно готовился к экзамену.",
 			Searched: false,
 			IsClue:   false,
@@ -37,7 +37,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    3,
 			LocID:    1,
-			Name:     "Книга на журнальном столике",
+			Name:     "📖  Книга на журнальном столике",
 			About:    "Между страницами книги спрятан сложенный вдвое лист бумаги.\nЭто личное письмо, адресованное Эмили.\nИз текста становится ясно, что Томас и Эмили тайно встречаются и собирались увидеться сегодня вечером.",
 			Searched: false,
 			IsClue:   true,
@@ -45,7 +45,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    4,
 			LocID:    1,
-			Name:     "Чай",
+			Name:     "☕️  Чай",
 			About:    "Чай давно остыл.\nНичего необычного.",
 			Searched: false,
 			IsClue:   false,
@@ -55,7 +55,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    5,
 			LocID:    2,
-			Name:     "Часы",
+			Name:     "🕰️   Часы",
 			About:    "Кухонные часы показывают время на 11 минут больше, чем ваши часы.\nПохоже, они давно спешат.",
 			Searched: false,
 			IsClue:   true,
@@ -63,7 +63,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    6,
 			LocID:    2,
-			Name:     "Мусорное ведро",
+			Name:     "🗑️  Мусорное ведро",
 			About:    "Обычный кухонный мусор: упаковки от продуктов, салфетки и пустая бутылка.\nНичего необычного.",
 			Searched: false,
 			IsClue:   false,
@@ -71,7 +71,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    7,
 			LocID:    2,
-			Name:     "Нижний шкаф",
+			Name:     "🗄️  Нижний шкаф",
 			About:    "Дверца одного из шкафов немного перекошена.\nЗа посудой ничего необычного нет, но задняя деревянная панель закреплена только с одной стороны.\nЗа панелью спрятана книга в тёмно-зелёном переплёте: «The Black Orchard».",
 			Searched: false,
 			IsClue:   true,
@@ -79,7 +79,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    8,
 			LocID:    2,
-			Name:     "Задняя дверь",
+			Name:     "🚪  Задняя дверь",
 			About:    "Дверь ведёт во двор.\nЗамок исправен.\nСнаружи земля мокрая после дождя, но возле порога множество старых следов обуви — \nопределить, кому они принадлежат, невозможно.",
 			Searched: false,
 			IsClue:   false,
@@ -89,7 +89,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    9,
 			LocID:    3,
-			Name:     "Тело",
+			Name:     "🩸  Тело",
 			About:    "Эдвард лежит возле письменного стола.\nНа затылке глубокая рана.\nРядом на ковре лежит тяжёлый бронзовый подсвечник со следами крови.\nНа руке Эдварда разбиты наручные часы.\nСтрелки остановились на 20:37.",
 			Searched: false,
 			IsClue:   true,
@@ -97,7 +97,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    10,
 			LocID:    3,
-			Name:     "Письменный стол",
+			Name:     "🖌️  Письменный стол",
 			About:    "На столе лежат раскрытая записная книжка, несколько счетов и ручка.\nНа деревянном краю заметно небольшое пятно синей краски.",
 			Searched: false,
 			IsClue:   false,
@@ -105,7 +105,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    11,
 			LocID:    3,
-			Name:     "Окно",
+			Name:     "🪟  Окно",
 			About:    "Окно закрыто изнутри.\nНа подоконнике лежит ровный слой пыли —\nследов рук или попытки открыть окно нет.",
 			Searched: false,
 			IsClue:   false,
@@ -113,7 +113,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    12,
 			LocID:    3,
-			Name:     "Камин",
+			Name:     "🕯️  Камин",
 			About:    "В камине среди золы виден кусок бумаги, который не сгорел полностью.\nНа сохранившейся части можно разобрать:\nMORRIS CONSULTING\nInvoice #0417\n£4,800",
 			Searched: false,
 			IsClue:   true,
@@ -121,7 +121,7 @@ func CreateObjects() []Object {
 		{
 			ObjID:    13,
 			LocID:    3,
-			Name:     "Витрина",
+			Name:     "📥  Витрина",
 			About:    "Стеклянная витрина не повреждена, но одна полка пуста.\nНа табличке указано: «The Black Orchard. First edition».\nЗамок цел. Следов взлома нет.",
 			Searched: false,
 			IsClue:   false,
@@ -150,23 +150,28 @@ func ChooseObjects(objCol []Object, cluesCol []Clue, scanner *bufio.Scanner, cho
 		fmt.Println()
 		fmt.Println("Выберите предмет для изучения:")
 
-		// получить число
 		choiceNum, ok := ReadNumber(scanner)
 		if !ok {
+			fmt.Println("Неверный ввод")
 			continue
 		}
 
 		if choiceNum == 0 {
 			return
+		} else if choiceNum < 1 || choiceNum > len(indexes) {
+			fmt.Println("Такого предмета нет.")
+			continue
+		} else {
+			// подогнать выбранный номер под комнату
+			realIndex := indexes[choiceNum-1]
+			ShowObject(objCol, cluesCol, realIndex, scanner)
+			continue
 		}
+	}
+}
 
-		if choiceNum < 1 || choiceNum > len(indexes) {
-			fmt.Println("Такого места нет.")
-			return
-		}
-
-		// подогнать выбранный номер под комнату
-		realIndex := indexes[choiceNum-1]
+func ShowObject(objCol []Object, cluesCol []Clue, realIndex int, scanner *bufio.Scanner) {
+	for {
 
 		// показать инфу
 		// не осматривали, найдена улика
@@ -174,32 +179,69 @@ func ChooseObjects(objCol []Object, cluesCol []Clue, scanner *bufio.Scanner, cho
 			objCol[realIndex].IsClue {
 			objCol[realIndex].Searched = true
 			fmt.Println()
+			fmt.Println("====================")
 			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Println("====================")
+			fmt.Println()
 			fmt.Println(objCol[realIndex].About)
 
 			FoundClue(cluesCol, objCol[realIndex].ObjID)
+
+			fmt.Println()
+			fmt.Println("0. Назад")
+			fmt.Println()
 
 			// не осматривали, нет улики
 		} else if objCol[realIndex].Searched == false &&
 			objCol[realIndex].IsClue == false {
 			objCol[realIndex].Searched = true
 			fmt.Println()
+			fmt.Println("====================")
 			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Println("====================")
+			fmt.Println()
 			fmt.Println(objCol[realIndex].About)
+			fmt.Println()
+			fmt.Println("0. Назад")
+			fmt.Println()
 
 			// осматривали, была улика
 		} else if objCol[realIndex].Searched == true &&
 			objCol[realIndex].IsClue == true {
 			fmt.Println()
+			fmt.Println("====================")
+			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Println("====================")
+			fmt.Println()
 			fmt.Println("Вы уже осматривали это место.\nВсе важные находки отсюда уже добавлены в список улик.")
+			fmt.Println()
+			fmt.Println("0. Назад")
 			fmt.Println()
 
 			// осматривали, не было улики
 		} else if objCol[realIndex].Searched == true &&
 			objCol[realIndex].IsClue == false {
 			fmt.Println()
+			fmt.Println("====================")
+			fmt.Printf("%s:\n", objCol[realIndex].Name)
+			fmt.Println("====================")
+			fmt.Println()
 			fmt.Println("Вы внимательно осматривали это место раньше.\nНичего нового обнаружить не удалось.")
 			fmt.Println()
+			fmt.Println("0. Назад")
+			fmt.Println()
+		}
+		// получить число
+		choiceNum, ok := ReadNumber(scanner)
+		if !ok {
+			fmt.Println("Неверный ввод")
+			continue
+		}
+
+		if choiceNum == 0 {
+			return
+		} else {
+			continue
 		}
 	}
 }

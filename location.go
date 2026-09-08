@@ -39,36 +39,39 @@ func ChooseLocations(locCol []Location, cluesCol []Clue, objCol []Object, scanne
 
 		// текст выбрать  локации
 		fmt.Println()
-		fmt.Println("Локации:")
+		fmt.Println("Комнаты:")
 		for i, loc := range locCol {
 			fmt.Printf("%d. %s\n", i+1, loc.Name)
 		}
 		fmt.Println()
 		fmt.Println("0. Назад")
 		fmt.Println()
-		fmt.Println("Выберите локацию:")
+		fmt.Println("Выберите комнату:")
 
 		// получить число
 		choiceLoc, ok := ReadNumber(scanner)
 		if !ok {
+			fmt.Println("Неверный ввод")
 			continue
 		}
 
 		// показать инфу
 		if choiceLoc > 0 && choiceLoc <= len(locCol) {
 			fmt.Println()
+			fmt.Println("=======================")
 			fmt.Printf("%s:\n", locCol[choiceLoc-1].Name)
+			fmt.Println("=======================")
+			fmt.Println()
 			fmt.Println(locCol[choiceLoc-1].About)
 
 			ChooseObjects(objCol, cluesCol, scanner, choiceLoc)
 
 			fmt.Println()
-			return
 		} else if choiceLoc == 0 {
 			return
 		} else {
 			fmt.Println("Такого места нет.")
-			return
+			continue
 		}
 	}
 }
