@@ -7,9 +7,11 @@ import (
 )
 
 type StartResponse struct {
-	Status  string `json:"status"`
-	Title   string `json:"title"`
-	Message string `json:"message"`
+	Status    string `json:"status"`
+	Title     string `json:"title"`
+	Message   string `json:"message"`
+	Intro     string `json:"intro"`
+	KnownInfo string `json:"knownInfo"`
 }
 
 type InspectResponse struct {
@@ -21,10 +23,16 @@ type InspectResponse struct {
 }
 
 type CaseResponse struct {
-	FoundClues     []Clue     `json:"foundClues"`
-	AskedDialogues []Dialogue `json:"askedDialogues"`
-	KeyFound       int        `json:"keyFound"`
-	KeyTotal       int        `json:"keyTotal"`
+	Intro           string     `json:"intro"`
+	KnownInfo       string     `json:"knownInfo"`
+	FoundClues      []Clue     `json:"foundClues"`
+	KnownFacts      []Dialogue `json:"knownFacts"`
+	CluesFound      int        `json:"cluesFound"`
+	CluesTotal      int        `json:"cluesTotal"`
+	ObjectsSearched int        `json:"objectsSearched"`
+	ObjectsTotal    int        `json:"objectsTotal"`
+	DialoguesAsked  int        `json:"dialoguesAsked"`
+	DialoguesTotal  int        `json:"dialoguesTotal"`
 }
 
 type AccuseResponse struct {
@@ -49,9 +57,11 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := StartResponse{
-		Status:  "started",
-		Title:   "ДЕЛО №17 - ПОСЛЕДНИЙ ЭКЗЕМПЛЯР",
-		Message: "Расследование начато",
+		Status:    "started",
+		Title:     "ДЕЛО №17 - ПОСЛЕДНИЙ ЭКЗЕМПЛЯР",
+		Message:   "Расследование начато",
+		Intro:     CaseIntro(),
+		KnownInfo: CaseKnownInfo(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -276,17 +286,29 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	for _, clue := range game.Clues {
 		if clue.Found {
 			response.FoundClues = append(response.FoundClues, clue)
+			response.CluesFound++
 		}
 	}
 
 	for _, dial := range game.Dialogues {
 		if dial.Asked {
-			response.AskedDialogues = append(response.AskedDialogues, dial)
+			response.KnownFacts = append(response.KnownFacts, dial)
+			response.DialoguesAsked++
 		}
 	}
 
-	response.KeyFound = KeyClues(game) + KeyDial(game) + KeyObj(game)
-	response.KeyTotal = 7
+	for _, obj := range game.Objects {
+		if obj.Searched {
+			response.ObjectsSearched++
+		}
+	}
+
+	response.CluesTotal = len(game.Clues)
+	response.DialoguesTotal = len(game.Dialogues)
+	response.ObjectsTotal = len(game.Objects)
+
+	response.Intro = CaseIntro()
+	response.KnownInfo = CaseKnownInfo()
 
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -319,10 +341,13 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	response := AccuseResponse{}
 	if keys > 7 && susID == 4 {
 		response.TypeEnd = "win"
+		response.TextEnd = WinEnding()
 	} else if keys > 3 && susID == 4 {
 		response.TypeEnd = "unsolved"
+		response.TextEnd = UnsolvedEnding()
 	} else {
 		response.TypeEnd = "fail"
+		response.TextEnd = FailedEnding()
 	}
 
 	err = json.NewEncoder(w).Encode(response)

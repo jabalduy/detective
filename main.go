@@ -23,7 +23,7 @@ func main() {
 // 		Dialogues: CreateDialogue(),
 // 	}
 
-// 	PrintIntro()
+// 	PrintIntro(scanner)
 // 	Pause(scanner)
 // 	ClearScreen()
 
