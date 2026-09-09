@@ -49,7 +49,6 @@
 
 <button id="start-button">НАЧАТЬ РАССЛЕДОВАНИЕ</button>
 <div id="locations"></div>
-<div id="locations"></div>
 <div id="objects"></div>
 
 <p id="result"></p>
@@ -113,16 +112,10 @@
         }
     }
 
-    async function loadObjects(locID) {
-        const response = await fetch("/objects?locID=" + locID);
-
-        const objects = await response.json();
-
-        console.log(objects);
-    }
-
     async function inspectObject(objID) {
-		const response = await fetch("/inspect-object?objID=" + objID);
+		const response = await fetch("/inspect-object?objID=" + objID, {
+            method: "POST"
+        });
 
 		const data = await response.json();
 

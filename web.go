@@ -48,6 +48,11 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func startHandler(w http.ResponseWriter, r *http.Request) {
 
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		return
+	}
+
 	game = &GameState{
 		Suspects:  CreateSuspects(),
 		Clues:     CreateClue(),
@@ -137,6 +142,11 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -339,7 +349,7 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	keys := KeyClues(game) + KeyDial(game) + KeyObj(game)
 
 	response := AccuseResponse{}
-	if keys > 7 && susID == 4 {
+	if keys == 7 && susID == 4 {
 		response.TypeEnd = "win"
 		response.TextEnd = WinEnding()
 	} else if keys > 3 && susID == 4 {
