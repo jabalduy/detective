@@ -12,6 +12,13 @@ type StartResponse struct {
 	Message string `json:"message"`
 }
 
+type InspectResponse struct {
+	Object Object `json:"object"`
+	ClueFound bool `json:"clueFound"`
+	ClueName string `json:"clueName"`
+	ClueAbout string `json:"clueAbout"`
+}
+
 var game *GameState
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +53,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -106,8 +114,23 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 		if game.Objects[i].ObjID == objID {
 
 			game.Objects[i].Searched = true
+			response := InspectResponse{
+				Object: game.Objects[i],
+			}
 
-			response := game.Objects[i]
+			if game.Objects[i].IsClue {
+				for clueIndex := range game.Clues {
+					if game.Clues[clueIndex].ObjID == objID {
+						game.Clues[clueIndex].Found = true
+
+						response.ClueFound = true
+						response.ClueName = game.Clues[clueIndex].Name 
+						response.ClueAbout = game.Clues[clueIndex].About 
+
+						break
+					}
+				}
+			}
 
 			w.Header().Set("Content-Type", "application/json")
 

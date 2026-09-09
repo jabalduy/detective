@@ -73,6 +73,26 @@
 		await loadLocations();
 	});
 
+	async function loadLocations() {
+		const response = await fetch("/locations");
+
+		const locations = await response.json();
+
+		locationsContainer.innerHTML = "";
+
+		for (const location of locations) {
+			const button = document.createElement("button");
+
+			button.textContent = location.Name;
+
+			button.addEventListener("click", async function () {
+				await loadObjects(location.LocID);
+			});
+
+			locationsContainer.appendChild(button);
+		}
+	}
+
 	async function loadObjects(locID) {
         const response = await fetch("/objects?locID=" + locID);
 
@@ -102,12 +122,20 @@
     }
 
     async function inspectObject(objID) {
-        const response = await fetch("/inspect-object?objID=" + objID);
+		const response = await fetch("/inspect-object?objID=" + objID);
 
-        const object = await response.json();
+		const data = await response.json();
 
-        result.textContent = object.About;
-    }
+		result.textContent = data.object.About;
+
+		if (data.clueFound) {
+			result.textContent +=
+				"\n\nНАЙДЕНА УЛИКА\n" +
+				data.clueName +
+				"\n" +
+				data.clueAbout;
+		}
+	}
 </script>
 </body>
 </html>
