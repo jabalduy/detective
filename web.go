@@ -379,6 +379,9 @@ func StartServer() {
 	http.HandleFunc("/case", caseHandler)
 	http.HandleFunc("/accuse", accuseHandler)
 
+	fileServer := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic(err)
