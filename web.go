@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -39,6 +40,18 @@ type AccuseResponse struct {
 	TypeEnd string `json:"typeEnd"`
 	TextEnd string `json:"textEnd"`
 }
+
+// type ObjectResponse struct {
+//     Name     string `json:"name"`
+//     Searched bool   `json:"searched"`
+//     ObjID    int    `json:"objID"`
+// }
+
+// type LocationResponse struct {
+//     Name     string `json:"name"`
+//     About bool   `json:"about"`
+//     LocID    int    `json:"locID"`
+// }
 
 var game *GameState
 
@@ -382,7 +395,13 @@ func StartServer() {
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
-	err := http.ListenAndServe(":8080", nil)
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		panic(err)
 	}
