@@ -27,6 +27,11 @@ type CaseResponse struct {
 	KeyTotal       int        `json:"keyTotal"`
 }
 
+type AccuseResponse struct {
+	TypeEnd string `json:"typeEnd"`
+	TextEnd string `json:"textEnd"`
+}
+
 var game *GameState
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -290,6 +295,43 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func accuseHandler(w http.ResponseWriter, r *http.Request) {
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		return
+	}
+
+	susIDstr := r.URL.Query().Get("susID")
+
+	susID, err := strconv.Atoi(susIDstr)
+	if err != nil {
+		http.Error(w, "Некорректный susID", http.StatusBadRequest)
+		return
+	}
+
+	keys := KeyClues(game) + KeyDial(game) + KeyObj(game)
+
+	response := AccuseResponse{}
+	if keys > 7 && susID == 4 {
+		response.TypeEnd = "win"
+	} else if keys > 3 && susID == 4 {
+		response.TypeEnd = "unsolved"
+	} else {
+		response.TypeEnd = "fail"
+	}
+
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Не удалось отправить обвинение", http.StatusInternalServerError)
+		return
+	}
+}
+
 func StartServer() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/start", startHandler)
@@ -300,6 +342,7 @@ func StartServer() {
 	http.HandleFunc("/dialogues", dialoguesHandler)
 	http.HandleFunc("/ask-dialogue", askDialogueHandler)
 	http.HandleFunc("/case", caseHandler)
+	http.HandleFunc("/accuse", accuseHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
