@@ -20,6 +20,13 @@ type InspectResponse struct {
 	DialogueUnlocked bool   `json:"dialogueUnlocked"`
 }
 
+type CaseResponse struct {
+	FoundClues     []Clue     `json:"foundClues"`
+	AskedDialogues []Dialogue `json:"askedDialogues"`
+	KeyFound       int        `json:"keyFound"`
+	KeyTotal       int        `json:"keyTotal"`
+}
+
 var game *GameState
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +180,8 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 	if game == nil {
-		http.Error(w, "Игра не запущена", http.StatusBadGateway)
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
 	}
 
 	susIDstr := r.URL.Query().Get("susID")
@@ -192,9 +200,93 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+
 	err = json.NewEncoder(w).Encode(dialogues)
 	if err != nil {
 		http.Error(w, "Не удалось отправить диалог", http.StatusInternalServerError)
+		return
+	}
+}
+
+func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		return
+	}
+
+	susIDstr := r.URL.Query().Get("susID")
+	susID, err := strconv.Atoi(susIDstr)
+	if err != nil {
+		http.Error(w, "Некорректный susID", http.StatusBadRequest)
+		return
+	}
+
+	dialIDstr := r.URL.Query().Get("dialID")
+	dialID, err := strconv.Atoi(dialIDstr)
+	if err != nil {
+		http.Error(w, "Некорректный dialID", http.StatusBadRequest)
+		return
+	}
+
+	var response Dialogue
+
+	found := false
+	for i := range game.Dialogues {
+		if game.Dialogues[i].SusID == susID &&
+			game.Dialogues[i].DialID == dialID &&
+			game.Dialogues[i].IsOpen {
+			game.Dialogues[i].Asked = true
+			response = game.Dialogues[i]
+			found = true
+		}
+	}
+
+	if !found {
+		http.Error(w, "Не найден диалог", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Не удалось отправить выбранный диалог", http.StatusInternalServerError)
+		return
+	}
+}
+
+func caseHandler(w http.ResponseWriter, r *http.Request) {
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	response := CaseResponse{}
+
+	for _, clue := range game.Clues {
+		if clue.Found {
+			response.FoundClues = append(response.FoundClues, clue)
+		}
+	}
+
+	for _, dial := range game.Dialogues {
+		if dial.Asked {
+			response.AskedDialogues = append(response.AskedDialogues, dial)
+		}
+	}
+
+	response.KeyFound = KeyClues(game) + KeyDial(game) + KeyObj(game)
+	response.KeyTotal = 7
+
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Не удалось отправить досье", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -206,6 +298,8 @@ func StartServer() {
 	http.HandleFunc("/inspect-object", inspectObjectHandler)
 	http.HandleFunc("/suspects", suspectsHandler)
 	http.HandleFunc("/dialogues", dialoguesHandler)
+	http.HandleFunc("/ask-dialogue", askDialogueHandler)
+	http.HandleFunc("/case", caseHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
