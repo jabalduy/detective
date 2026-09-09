@@ -83,13 +83,15 @@ func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
 }
 
 func Accuse(choiceAc int, game *GameState, scanner *bufio.Scanner) {
-	if KeyClues(game)+KeyDial(game)+KeyObj(game) == 7 && choiceAc == 4 {
+	keys := KeyClues(game) + KeyDial(game) + KeyObj(game)
+
+	if keys == 7 && choiceAc == 4 {
 		WinEnding()
 		Pause(scanner)
-	} else if KeyClues(game)+KeyDial(game)+KeyObj(game) < 7 && choiceAc == 4 {
+	} else if keys > 3 && choiceAc == 4 {
 		UnsolvedEnding()
 		Pause(scanner)
-	} else if KeyClues(game)+KeyDial(game)+KeyObj(game) < 7 && choiceAc != 4 {
+	} else {
 		FailedEnding()
 		Pause(scanner)
 	}

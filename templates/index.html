@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Дело №17</title>
+
+	<style>
+		body {
+			margin: 0;
+			min-height: 100vh;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			background: #1a1a1a;
+		}
+
+		.terminal {
+			width: 800px;
+			min-height: 500px;
+
+			padding: 32px;
+
+			background: #0d0d0d;
+			color: #d8d8d8;
+
+			font-family: monospace;
+			font-size: 16px;
+			line-height: 1.5;
+
+			white-space: pre-wrap;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="terminal">
+ДЕЛО №17
+«ПОСЛЕДНИЙ ЭКЗЕМПЛЯР»
+
+В 21:10 в библиотеке собственного дома
+найден мёртвым Эдвард Вейл.
+
+1. Исследовать комнаты
+2. Допросить подозреваемого
+3. Досье дела
+4. Обвинить
+
+<button id="start-button">НАЧАТЬ РАССЛЕДОВАНИЕ</button>
+<div id="locations"></div>
+<div id="locations"></div>
+<div id="objects"></div>
+
+<p id="result"></p>
+	</div>
+
+	<script>
+	const startButton = document.getElementById("start-button");
+	const result = document.getElementById("result");
+	const locationsContainer = document.getElementById("locations");
+    const objectsContainer = document.getElementById("objects");
+
+	startButton.addEventListener("click", async function () {
+		const response = await fetch("/start", {
+			method: "POST"
+		});
+
+		const data = await response.json();
+
+		result.textContent = data.message;
+
+		await loadLocations();
+	});
+
+	async function loadObjects(locID) {
+        const response = await fetch("/objects?locID=" + locID);
+
+        const objects = await response.json();
+
+        objectsContainer.innerHTML = "";
+
+        for (const object of objects) {
+            const button = document.createElement("button");
+
+            button.textContent = object.Name;
+
+            button.addEventListener("click", async function () {
+                await inspectObject(object.ObjID);
+            });
+
+            objectsContainer.appendChild(button);
+        }
+    }
+
+    async function loadObjects(locID) {
+        const response = await fetch("/objects?locID=" + locID);
+
+        const objects = await response.json();
+
+        console.log(objects);
+    }
+
+    async function inspectObject(objID) {
+        const response = await fetch("/inspect-object?objID=" + objID);
+
+        const object = await response.json();
+
+        result.textContent = object.About;
+    }
+</script>
+</body>
+</html>
