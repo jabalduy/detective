@@ -13,10 +13,11 @@ type StartResponse struct {
 }
 
 type InspectResponse struct {
-	Object Object `json:"object"`
-	ClueFound bool `json:"clueFound"`
-	ClueName string `json:"clueName"`
-	ClueAbout string `json:"clueAbout"`
+	Object           Object `json:"object"`
+	ClueFound        bool   `json:"clueFound"`
+	ClueName         string `json:"clueName"`
+	ClueAbout        string `json:"clueAbout"`
+	DialogueUnlocked bool   `json:"dialogueUnlocked"`
 }
 
 var game *GameState
@@ -124,8 +125,17 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 						game.Clues[clueIndex].Found = true
 
 						response.ClueFound = true
-						response.ClueName = game.Clues[clueIndex].Name 
-						response.ClueAbout = game.Clues[clueIndex].About 
+						response.ClueName = game.Clues[clueIndex].Name
+						response.ClueAbout = game.Clues[clueIndex].About
+
+						for dialIndex := range game.Dialogues {
+							if game.Dialogues[dialIndex].ObjID == objID {
+								game.Dialogues[dialIndex].IsClue = true
+								game.Dialogues[dialIndex].IsOpen = true
+
+								response.DialogueUnlocked = true
+							}
+						}
 
 						break
 					}
