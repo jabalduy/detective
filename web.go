@@ -66,6 +66,21 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func suspectsHandler(w http.ResponseWriter, r *http.Request) {
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	err := json.NewEncoder(w).Encode(game.Suspects)
+	if err != nil {
+		http.Error(w, "Не удалось отправить подозреваемых", http.StatusInternalServerError)
+		return
+	}
+}
+
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
@@ -156,12 +171,41 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Объект не найден", http.StatusNotFound)
 }
 
+func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadGateway)
+	}
+
+	susIDstr := r.URL.Query().Get("susID")
+
+	susID, err := strconv.Atoi(susIDstr)
+	if err != nil {
+		http.Error(w, "Некорректный susID", http.StatusBadRequest)
+		return
+	}
+
+	var dialogues []Dialogue
+
+	for i := range game.Dialogues {
+		if game.Dialogues[i].SusID == susID && game.Dialogues[i].IsOpen {
+			dialogues = append(dialogues, game.Dialogues[i])
+		}
+	}
+
+	err = json.NewEncoder(w).Encode(dialogues)
+	if err != nil {
+		http.Error(w, "Не удалось отправить диалог", http.StatusInternalServerError)
+	}
+}
+
 func StartServer() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/start", startHandler)
 	http.HandleFunc("/locations", locationsHandler)
 	http.HandleFunc("/objects", objectsHandler)
 	http.HandleFunc("/inspect-object", inspectObjectHandler)
+	http.HandleFunc("/suspects", suspectsHandler)
+	http.HandleFunc("/dialogues", dialoguesHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
