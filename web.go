@@ -1,10 +1,13 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 type StartResponse struct {
@@ -53,7 +56,66 @@ type AccuseResponse struct {
 //     LocID    int    `json:"locID"`
 // }
 
-var game *GameState
+var games = make(map[string]*GameState)
+var gamesMu sync.Mutex
+var gameMu sync.Mutex
+
+func getGame(w http.ResponseWriter, r *http.Request) *GameState {
+	sessionID := getSessionID(w, r)
+
+	gamesMu.Lock()
+	defer gamesMu.Unlock()
+
+	game, ok := games[sessionID]
+	if ok {
+		return game
+	}
+
+	game = newGame()
+	games[sessionID] = game
+
+	return game
+}
+
+func newSessionID() string {
+	bytes := make([]byte, 16)
+
+	_, err := rand.Read(bytes)
+	if err != nil {
+		panic(err)
+	}
+
+	return hex.EncodeToString(bytes)
+}
+
+func newGame() *GameState {
+	return &GameState{
+		Suspects:  CreateSuspects(),
+		Clues:     CreateClue(),
+		Locations: CreateLocations(),
+		Objects:   CreateObjects(),
+		Dialogues: CreateDialogue(),
+	}
+}
+
+func getSessionID(w http.ResponseWriter, r *http.Request) string {
+	cookie, err := r.Cookie("sessionID")
+
+	if err == nil {
+		return cookie.Value
+	}
+
+	sessionID := newSessionID()
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "sessionID",
+		Value:    sessionID,
+		Path:     "/",
+		HttpOnly: true,
+	})
+
+	return sessionID
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "templates/index.html")
@@ -66,13 +128,11 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	game = &GameState{
-		Suspects:  CreateSuspects(),
-		Clues:     CreateClue(),
-		Locations: CreateLocations(),
-		Objects:   CreateObjects(),
-		Dialogues: CreateDialogue(),
-	}
+	sessionID := getSessionID(w, r)
+	game := newGame()
+	gamesMu.Lock()
+	games[sessionID] = game
+	gamesMu.Unlock()
 
 	response := StartResponse{
 		Status:    "started",
@@ -92,6 +152,10 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -107,6 +171,10 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func suspectsHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -122,6 +190,10 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -153,6 +225,10 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -217,6 +293,10 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -248,6 +328,10 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -299,6 +383,10 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func caseHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
@@ -341,6 +429,10 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
+	game := getGame(w, r)
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
 	if game == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
