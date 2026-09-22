@@ -66,3 +66,17 @@ func (d Dialogue) ID() DialogueID {
 		DialID: d.DialID,
 	}
 }
+
+type Endings struct {
+	Win      string `json:"win"`
+	Unsolved string `json:"unsolved"`
+	Fail     string `json:"fail"`
+}
+
+type CaseInfo struct {
+	ID        string  `json:"id"`
+	Title     string  `json:"title"`
+	Intro     string  `json:"intro"`
+	KnownInfo string  `json:"known_info"`
+	Endings   Endings `json:"endings"`
+}

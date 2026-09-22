@@ -1,6 +1,8 @@
 package game
 
 type GameState struct {
+	Case CaseInfo
+
 	Suspects  []Suspect
 	Clues     []Clue
 	Locations []Location

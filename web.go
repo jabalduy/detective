@@ -90,6 +90,8 @@ func newGame() (*game.GameState, error) {
 	}
 
 	return &game.GameState{
+		Case: caseDef.CaseInfo,
+
 		Suspects:  caseDef.Suspects,
 		Clues:     caseDef.Clues,
 		Locations: caseDef.Locations,
@@ -136,7 +138,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := getSessionID(w, r)
-	game, err := newGame()
+	state, err := newGame()
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -144,15 +146,15 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gamesMu.Lock()
-	games[sessionID] = game
+	games[sessionID] = state
 	gamesMu.Unlock()
 
 	response := StartResponse{
 		Status:    "started",
 		Title:     "ДЕЛО №17 - ПОСЛЕДНИЙ ЭКЗЕМПЛЯР",
 		Message:   "Расследование начато",
-		Intro:     CaseIntro(),
-		KnownInfo: CaseKnownInfo(),
+		Intro:     state.Case.Intro,
+		KnownInfo: state.Case.KnownInfo,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -497,8 +499,8 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	response.DialoguesTotal = len(state.Dialogues)
 	response.ObjectsTotal = len(state.Objects)
 
-	response.Intro = CaseIntro()
-	response.KnownInfo = CaseKnownInfo()
+	response.Intro = state.Case.Intro
+	response.KnownInfo = state.Case.KnownInfo
 
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -544,13 +546,13 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	response := AccuseResponse{}
 	if keys == 7 && susID == 4 {
 		response.TypeEnd = "win"
-		response.TextEnd = WinEnding()
+		response.TextEnd = state.Case.Endings.Win
 	} else if keys > 3 && susID == 4 {
 		response.TypeEnd = "unsolved"
-		response.TextEnd = UnsolvedEnding()
+		response.TextEnd = state.Case.Endings.Unsolved
 	} else {
 		response.TypeEnd = "fail"
-		response.TextEnd = FailedEnding()
+		response.TextEnd = state.Case.Endings.Fail
 	}
 
 	err = json.NewEncoder(w).Encode(response)
