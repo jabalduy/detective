@@ -26,13 +26,17 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session := &Session{
+		State: state,
+	}
+
 	gamesMu.Lock()
-	games[sessionID] = state
+	games[sessionID] = session
 	gamesMu.Unlock()
 
 	response := StartResponse{
 		Status:    "started",
-		Title:     "ДЕЛО №17 - ПОСЛЕДНИЙ ЭКЗЕМПЛЯР",
+		Title:     state.Case.Title,
 		Message:   "Расследование начато",
 		Intro:     state.Case.Intro,
 		KnownInfo: state.Case.KnownInfo,

@@ -13,6 +13,11 @@ var games = make(map[string]*game.GameState)
 var gamesMu sync.Mutex
 var gameMu sync.Mutex
 
+type Session struct {
+	State *game.GameState
+	Mu    sync.RWMutex
+}
+
 func newSessionID() string {
 	bytes := make([]byte, 16)
 
