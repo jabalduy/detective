@@ -122,6 +122,7 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 			state.OpenDialogues[dialogue.ID()] {
 
 			state.AskedDialogues[dialogue.ID()] = true
+			game.ApplyEffects(state, dialogue.Effects)
 			game.UpdateOpenDialogues(state)
 
 			response = state.Dialogues[i]
