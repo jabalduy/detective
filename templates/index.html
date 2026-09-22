@@ -1326,12 +1326,12 @@
 
 			const objectName =
 				data.object?.name ??
-				data.object?.Name ??
+				data.object?.name ??
 				"";
 
 			const objectAbout =
 				data.object?.about ??
-				data.object?.About ??
+				data.object?.about ??
 				"";
 
 			return `
@@ -1431,7 +1431,7 @@
 				state.selectedDialogue = data;
 
 				const dialogue = state.dialogues.find(
-					item => item.DialID === dialID
+					item => item.dial_id === dialID
 				);
 
 				if (dialogue) {
@@ -1462,7 +1462,7 @@
 
 				<h2 class="section-title">
 					${suspect
-					? escapeHtml(suspect.Name)
+					? escapeHtml(suspect.name)
 					: "Подозреваемые"
 				}
 				</h2>
@@ -1476,7 +1476,7 @@
 										class="suspect-button"
 										data-suspect="${index + 1}"
 									>
-										${escapeHtml(item.Name)}
+										${escapeHtml(item.name)}
 									</button>
 								`).join("")}
 
@@ -1491,12 +1491,12 @@
 							<div class="suspect-head">
 
 								<p class="suspect-meta">
-									${escapeHtml(String(suspect.Age || ""))}
-									${suspect.Age ? " лет" : ""}
+									${escapeHtml(String(suspect.age || ""))}
+									${suspect.age ? " лет" : ""}
 								</p>
 
 								<p class="suspect-about">
-									${escapeHtml(suspect.About || "")}
+									${escapeHtml(suspect.about || "")}
 								</p>
 
 							</div>
@@ -1518,12 +1518,12 @@
 									<button
 										class="question-button
 											${dialogue.Asked ? "asked" : ""}
-											${state.selectedDialogue?.DialID === dialogue.DialID ? "selected" : ""}
+											${state.selectedDialogue?.dial_id === dialogue.dial_id ? "selected" : ""}
 											${dialogue.IsClue && !dialogue.Asked ? "new-question" : ""}
 										"
-										data-dialogue="${dialogue.DialID}"
+										data-dialogue="${dialogue.dial_id}"
 									>
-										${escapeHtml(dialogue.Question)}
+										${escapeHtml(dialogue.question)}
 									</button>
 								`).join("")}
 
@@ -1551,11 +1551,11 @@
 					${state.selectedDialogue
 					? `
 								<div class="answer-question">
-									${escapeHtml(state.selectedDialogue.Question)}
+									${escapeHtml(state.selectedDialogue.question)}
 								</div>
 
 								<div class="answer-text">
-									${escapeHtml(state.selectedDialogue.Answer || "")}
+									${escapeHtml(state.selectedDialogue.answer || "")}
 								</div>
 							`
 					: `
@@ -1646,11 +1646,11 @@
 
 			for (const dialogue of dialogues) {
 
-				const susID = dialogue.SusID;
+				const susID = dialogue.sus_id;
 
 				const fact =
-					dialogue.Fact ||
-					dialogue.Answer;
+					dialogue.fact ||
+					dialogue.answer;
 
 				if (!fact) {
 					continue;
@@ -1672,7 +1672,7 @@
 
 		function suspectNameByID(susID) {
 			return (
-				state.suspects[susID - 1]?.Name ||
+				state.suspects[susID - 1]?.name ||
 				`Подозреваемый ${susID}`
 			);
 		}
@@ -1684,13 +1684,13 @@
 
 			const groups = groupFacts(
 				data.knownFacts ||
-				data.KnownFacts ||
+				data.knownFacts ||
 				[]
 			);
 
 			const clues =
 				data.foundClues ||
-				data.FoundClues ||
+				data.foundClues ||
 				[];
 
 
@@ -1711,9 +1711,9 @@
 						<span>Найдено улик</span>
 
 						<span class="progress-value">
-							${data.cluesFound ?? data.CluesFound ?? 0}
+							${data.cluesFound ?? data.cluesFound ?? 0}
 							/
-							${data.cluesTotal ?? data.CluesTotal ?? 0}
+							${data.cluesTotal ?? data.cluesTotal ?? 0}
 						</span>
 					</div>
 
@@ -1721,9 +1721,9 @@
 						<span>Осмотрено объектов</span>
 
 						<span class="progress-value">
-							${data.objectsSearched ?? data.ObjectsSearched ?? 0}
+							${data.objectsSearched ?? data.objectsSearched ?? 0}
 							/
-							${data.objectsTotal ?? data.ObjectsTotal ?? 0}
+							${data.objectsTotal ?? data.objectsTotal ?? 0}
 						</span>
 					</div>
 
@@ -1731,7 +1731,7 @@
 						<span>Получено показаний</span>
 
 						<span class="progress-value">
-							${data.dialoguesAsked ?? data.DialoguesAsked ?? 0}
+							${data.dialoguesAsked ?? data.dialoguesAsked ?? 0}
 						</span>
 					</div>
 
@@ -1785,10 +1785,10 @@
 								${clues.map(clue => `
 									<li>
 										<strong>
-											${escapeHtml(clue.name ?? clue.Name)}
+											${escapeHtml(clue.name ?? clue.name)}
 										</strong>
 
-										${escapeHtml(clue.about ?? clue.About ?? "")}
+										${escapeHtml(clue.about ?? clue.about ?? "")}
 									</li>
 								`).join("")}
 
@@ -1974,7 +1974,7 @@
 				}"
 							data-accuse="${index + 1}"
 						>
-							${escapeHtml(item.Name)}
+							${escapeHtml(item.name)}
 						</button>
 					`).join("")}
 
@@ -1994,16 +1994,16 @@
 							</p>
 
 							<h2 class="section-title">
-								${escapeHtml(suspect.Name)}
+								${escapeHtml(suspect.name)}
 							</h2>
 
 							<p class="suspect-meta">
-								${escapeHtml(String(suspect.Age || ""))}
-								${suspect.Age ? " лет" : ""}
+								${escapeHtml(String(suspect.age || ""))}
+								${suspect.age ? " лет" : ""}
 							</p>
 
 							<p class="suspect-about">
-								${escapeHtml(suspect.About || "")}
+								${escapeHtml(suspect.about || "")}
 							</p>
 
 							<div class="hand-note">
