@@ -8,60 +8,59 @@ import (
 type Clue struct {
 	Name  string `json:"name"`
 	About string `json:"about"`
-	Found bool   `json:"-"`
 	ObjID int    `json:"obj_id"`
 	Key   bool   `json:"key"`
 }
 
-func CreateClue() []Clue {
-	clueCollect := []Clue{
-		{
-			Name:  "🪪  Карточка выдачи",
-			About: "В книге из рюкзака Томаса обнаружена карточка:\n«Томасу - вернуть в пятницу».\nНиже стоит подпись Эдварда Вейла.",
-			Found: false,
-			ObjID: 1,
-		},
-		{
-			Name: "💌  Письмо Эмили",
-			About: "«Эмили, я больше не могу делать вид, что всё нормально.\n" +
-				"Твой дед не имеет права решать, с кем тебе быть.\n" +
-				"Если он ещё раз попытается нас разлучить, я сам с ним поговорю.\n" +
-				"Мне всё равно, насколько ему это не понравится.\n" +
-				"Я устал от него и от того, что мы должны постоянно скрываться.\n" +
-				"Томас»",
-			Found: false,
-			ObjID: 3,
-		},
-		{
-			Name:  "🕰️   Кухонные часы",
-			About: "Часы на кухне спешат ровно на 11 минут.",
-			Found: false,
-			ObjID: 5,
-		},
-		{
-			Name:  "📙  Пропавшая книга",
-			About: "Первое издание «The Black Orchard»,\nукраденное из библиотеки.\nКнига была спрятана за задней панелью кухонного шкафа и не покидала дом.",
-			Found: false,
-			ObjID: 7,
-			Key:   true,
-		},
-		{
-			Name:  "⌚️  Разбитые часы",
-			About: "Наручные часы Эдварда разбиты при падении.\nСтрелки остановились на 20:37.",
-			Found: false,
-			ObjID: 9,
-			Key:   true,
-		},
-		{
-			Name:  "📜  Обгоревший документ",
-			About: "Фрагмент финансового документа, найденный в камине библиотеки.\nНа нём сохранились надписи\n«MORRIS CONSULTING»,\n«Invoice #0417»\nи сумма £4,800.",
-			Found: false,
-			ObjID: 12,
-			Key:   true,
-		},
-	}
-	return clueCollect
-}
+// func CreateClue() []Clue {
+// 	clueCollect := []Clue{
+// 		{
+// 			Name:  "🪪  Карточка выдачи",
+// 			About: "В книге из рюкзака Томаса обнаружена карточка:\n«Томасу - вернуть в пятницу».\nНиже стоит подпись Эдварда Вейла.",
+// 			Found: false,
+// 			ObjID: 1,
+// 		},
+// 		{
+// 			Name: "💌  Письмо Эмили",
+// 			About: "«Эмили, я больше не могу делать вид, что всё нормально.\n" +
+// 				"Твой дед не имеет права решать, с кем тебе быть.\n" +
+// 				"Если он ещё раз попытается нас разлучить, я сам с ним поговорю.\n" +
+// 				"Мне всё равно, насколько ему это не понравится.\n" +
+// 				"Я устал от него и от того, что мы должны постоянно скрываться.\n" +
+// 				"Томас»",
+// 			Found: false,
+// 			ObjID: 3,
+// 		},
+// 		{
+// 			Name:  "🕰️   Кухонные часы",
+// 			About: "Часы на кухне спешат ровно на 11 минут.",
+// 			Found: false,
+// 			ObjID: 5,
+// 		},
+// 		{
+// 			Name:  "📙  Пропавшая книга",
+// 			About: "Первое издание «The Black Orchard»,\nукраденное из библиотеки.\nКнига была спрятана за задней панелью кухонного шкафа и не покидала дом.",
+// 			Found: false,
+// 			ObjID: 7,
+// 			Key:   true,
+// 		},
+// 		{
+// 			Name:  "⌚️  Разбитые часы",
+// 			About: "Наручные часы Эдварда разбиты при падении.\nСтрелки остановились на 20:37.",
+// 			Found: false,
+// 			ObjID: 9,
+// 			Key:   true,
+// 		},
+// 		{
+// 			Name:  "📜  Обгоревший документ",
+// 			About: "Фрагмент финансового документа, найденный в камине библиотеки.\nНа нём сохранились надписи\n«MORRIS CONSULTING»,\n«Invoice #0417»\nи сумма £4,800.",
+// 			Found: false,
+// 			ObjID: 12,
+// 			Key:   true,
+// 		},
+// 	}
+// 	return clueCollect
+// }
 
 func ShowClues(game *GameState, scanner *bufio.Scanner) {
 
@@ -71,7 +70,7 @@ func ShowClues(game *GameState, scanner *bufio.Scanner) {
 	fmt.Println()
 	count := 0
 	for _, clue := range game.Clues {
-		if clue.Found {
+		if game.FoundClues[clue.ObjID] {
 			count += 1
 			fmt.Printf("%d. %s\n", count, clue.Name)
 			fmt.Println(clue.About)
@@ -85,16 +84,18 @@ func ShowClues(game *GameState, scanner *bufio.Scanner) {
 }
 
 func FoundClue(game *GameState, objID int) {
-	for index, clue := range game.Clues {
+	for _, clue := range game.Clues {
 		if clue.ObjID == objID {
 			PrintStar()
 			fmt.Printf("%s:\n", clue.Name)
 			fmt.Println(clue.About)
-			game.Clues[index].Found = true
+			game.FoundClues[clue.ObjID] = true
 			for i, dial := range game.Dialogues {
 				if dial.ObjID == clue.ObjID {
 					game.Dialogues[i].IsClue = true
-					game.Dialogues[i].IsOpen = true
+
+					game.OpenDialogues[dial.ID()] = true
+
 					fmt.Println()
 					fmt.Println("💭 Новые диалоги разблокированы!")
 					fmt.Println()
@@ -119,7 +120,7 @@ func PrintStar() {
 func KeyClues(game *GameState) int {
 	keys := 0
 	for _, clue := range game.Clues {
-		if clue.Key && clue.Found {
+		if clue.Key && game.FoundClues[clue.ObjID] {
 			keys += 1
 		}
 	}

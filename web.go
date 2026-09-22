@@ -61,6 +61,7 @@ var games = make(map[string]*GameState)
 var gamesMu sync.Mutex
 var gameMu sync.Mutex
 
+// ИГРОВАЯ СЕССИЯ
 func getGame(w http.ResponseWriter, r *http.Request) (*GameState, error) {
 	sessionID := getSessionID(w, r)
 
@@ -104,6 +105,12 @@ func newGame() (*GameState, error) {
 		Locations: caseDef.Locations,
 		Objects:   caseDef.Objects,
 		Dialogues: caseDef.Dialogues,
+
+		FoundClues:      make(map[int]bool),
+		SearchedObjects: make(map[int]bool),
+		AskedDialogues:  make(map[DialogueID]bool),
+
+		OpenDialogues: initOpenDialogues(caseDef.Dialogues),
 	}, nil
 }
 
@@ -126,6 +133,7 @@ func getSessionID(w http.ResponseWriter, r *http.Request) string {
 	return sessionID
 }
 
+// СТАРТ
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "templates/index.html")
 }
@@ -166,6 +174,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ЛОКАЦИИ, ОБЪЕКТЫ, РАССЛЕДОВАНИЕ
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(w, r)
 	if err != nil {
@@ -191,32 +200,8 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func suspectsHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
-	if err != nil {
-		log.Printf("new game: %v", err)
-		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
-		return
-	}
-
-	gameMu.Lock()
-	defer gameMu.Unlock()
-
-	if game == nil {
-		http.Error(w, "Игра не запущена", http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	err = json.NewEncoder(w).Encode(game.Suspects)
-	if err != nil {
-		http.Error(w, "Не удалось отправить подозреваемых", http.StatusInternalServerError)
-		return
-	}
-}
-
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
+	// ПОЛУЧИТЬ ИГРУ
 	game, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
@@ -232,6 +217,7 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ОБРАБРОТКА ВЫБОРА КОМНАТЫ
 	locIDStr := r.URL.Query().Get("locID")
 
 	locID, err := strconv.Atoi(locIDStr)
@@ -240,17 +226,26 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var objects []Object
+	objectsResponse := make([]ObjectResponse, 0)
 
 	for _, obj := range game.Objects {
 		if obj.LocID == locID {
-			objects = append(objects, obj)
+			newObj := ObjectResponse{
+				LocID:    obj.LocID,
+				Name:     obj.Name,
+				About:    obj.About,
+				ObjID:    obj.ObjID,
+				IsClue:   obj.IsClue,
+				Key:      obj.Key,
+				Searched: game.SearchedObjects[obj.ObjID],
+			}
+			objectsResponse = append(objectsResponse, newObj)
 		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(objects)
+	err = json.NewEncoder(w).Encode(objectsResponse)
 	if err != nil {
 		http.Error(w, "Не удалось отправить объекты", http.StatusInternalServerError)
 		return
@@ -289,7 +284,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	for i := range game.Objects {
 		if game.Objects[i].ObjID == objID {
 
-			game.Objects[i].Searched = true
+			game.SearchedObjects[objID] = true
 			response := InspectResponse{
 				Object: game.Objects[i],
 			}
@@ -297,7 +292,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 			if game.Objects[i].IsClue {
 				for clueIndex := range game.Clues {
 					if game.Clues[clueIndex].ObjID == objID {
-						game.Clues[clueIndex].Found = true
+						game.FoundClues[objID] = true
 
 						response.ClueFound = true
 						response.ClueName = game.Clues[clueIndex].Name
@@ -306,7 +301,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 						for dialIndex := range game.Dialogues {
 							if game.Dialogues[dialIndex].ObjID == objID {
 								game.Dialogues[dialIndex].IsClue = true
-								game.Dialogues[dialIndex].IsOpen = true
+								game.OpenDialogues[game.Dialogues[dialIndex].ID()] = true
 
 								response.DialogueUnlocked = true
 							}
@@ -329,6 +324,32 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, "Объект не найден", http.StatusNotFound)
+}
+
+// ПОДОЗРЕВАЕМЫЕ, ДИАЛОГИ
+func suspectsHandler(w http.ResponseWriter, r *http.Request) {
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
+	gameMu.Lock()
+	defer gameMu.Unlock()
+
+	if game == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	err = json.NewEncoder(w).Encode(game.Suspects)
+	if err != nil {
+		http.Error(w, "Не удалось отправить подозреваемых", http.StatusInternalServerError)
+		return
+	}
 }
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
@@ -358,7 +379,7 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 	var dialogues []Dialogue
 
 	for i := range game.Dialogues {
-		if game.Dialogues[i].SusID == susID && game.Dialogues[i].IsOpen {
+		if game.Dialogues[i].SusID == susID && game.OpenDialogues[game.Dialogues[i].ID()] {
 			dialogues = append(dialogues, game.Dialogues[i])
 		}
 	}
@@ -410,11 +431,16 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 	var response Dialogue
 
 	found := false
-	for i := range game.Dialogues {
+	for i, dialogue := range game.Dialogues {
 		if game.Dialogues[i].SusID == susID &&
 			game.Dialogues[i].DialID == dialID &&
-			game.Dialogues[i].IsOpen {
-			game.Dialogues[i].Asked = true
+			game.OpenDialogues[dialogue.ID()] {
+			dialKey := DialogueID{
+				SusID:  dialogue.SusID,
+				DialID: dialogue.DialID,
+			}
+
+			game.AskedDialogues[dialKey] = true
 			response = game.Dialogues[i]
 			found = true
 		}
@@ -433,6 +459,24 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func initOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {
+	openDialogues := make(map[DialogueID]bool)
+
+	for _, dialogue := range dialogues {
+		if dialogue.InitiallyOpen {
+			dialKey := DialogueID{
+				SusID:  dialogue.SusID,
+				DialID: dialogue.DialID,
+			}
+
+			openDialogues[dialKey] = true
+		}
+	}
+
+	return openDialogues
+}
+
+// ДОСЬЕ
 func caseHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(w, r)
 	if err != nil {
@@ -452,21 +496,26 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	response := CaseResponse{}
 
 	for _, clue := range game.Clues {
-		if clue.Found {
+		if game.FoundClues[clue.ObjID] {
 			response.FoundClues = append(response.FoundClues, clue)
 			response.CluesFound++
 		}
 	}
 
 	for _, dial := range game.Dialogues {
-		if dial.Asked {
+		dialKey := DialogueID{
+			SusID:  dial.SusID,
+			DialID: dial.DialID,
+		}
+
+		if game.AskedDialogues[dialKey] {
 			response.KnownFacts = append(response.KnownFacts, dial)
 			response.DialoguesAsked++
 		}
 	}
 
 	for _, obj := range game.Objects {
-		if obj.Searched {
+		if game.SearchedObjects[obj.ObjID] {
 			response.ObjectsSearched++
 		}
 	}
@@ -485,6 +534,7 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ОБВИНЕНИЕ
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(w, r)
 	if err != nil {
@@ -535,6 +585,7 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ЗАПУСК СЕРВЕРА
 func StartServer() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/start", startHandler)

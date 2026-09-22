@@ -6,131 +6,140 @@ import (
 )
 
 type Object struct {
+	LocID  int    `json:"loc_id"`
+	Name   string `json:"name"`
+	About  string `json:"about"`
+	ObjID  int    `json:"obj_id"`
+	IsClue bool   `json:"is_clue"`
+	Key    bool   `json:"key"`
+}
+
+type ObjectResponse struct {
 	LocID    int    `json:"loc_id"`
 	Name     string `json:"name"`
 	About    string `json:"about"`
-	Searched bool   `json:"searched"`
 	ObjID    int    `json:"obj_id"`
 	IsClue   bool   `json:"is_clue"`
 	Key      bool   `json:"key"`
+	Searched bool   `json:"searched"`
 }
 
-func CreateObjects() []Object {
-	objCollect := []Object{
+// func CreateObjects() []Object {
+// 	objCollect := []Object{
 
-		// ГОСТИНАЯ
-		{
-			ObjID:    1,
-			LocID:    1,
-			Name:     "🛋️   Диван",
-			About:    "На диване лежит рюкзак Томаса.\nВнутри находится старая книга из коллекции Эдварда.",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    2,
-			LocID:    1,
-			Name:     "📚  Учебники",
-			About:    "Редкие книги по истории и несколько листов с конспектами.\nСудя по записям, Томас готовился с ними к экзамену.",
-			Searched: false,
-			IsClue:   false,
-		},
-		{
-			ObjID:    3,
-			LocID:    1,
-			Name:     "📖  Книга на журнальном столике",
-			About:    "Между страницами книги спрятан сложенный вдвое лист бумаги.\nЭто личное письмо, адресованное Эмили.",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    4,
-			LocID:    1,
-			Name:     "☕️  Чай",
-			About:    "Чай давно остыл.\nНичего необычного.",
-			Searched: false,
-			IsClue:   false,
-		},
+// 		// ГОСТИНАЯ
+// 		{
+// 			ObjID:    1,
+// 			LocID:    1,
+// 			Name:     "🛋️   Диван",
+// 			About:    "На диване лежит рюкзак Томаса.\nВнутри находится старая книга из коллекции Эдварда.",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    2,
+// 			LocID:    1,
+// 			Name:     "📚  Учебники",
+// 			About:    "Редкие книги по истории и несколько листов с конспектами.\nСудя по записям, Томас готовился с ними к экзамену.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
+// 		{
+// 			ObjID:    3,
+// 			LocID:    1,
+// 			Name:     "📖  Книга на журнальном столике",
+// 			About:    "Между страницами книги спрятан сложенный вдвое лист бумаги.\nЭто личное письмо, адресованное Эмили.",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    4,
+// 			LocID:    1,
+// 			Name:     "☕️  Чай",
+// 			About:    "Чай давно остыл.\nНичего необычного.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
 
-		// КУХНЯ
-		{
-			ObjID:    5,
-			LocID:    2,
-			Name:     "🕰️   Часы",
-			About:    "Кухонные часы показывают время на 11 минут больше, чем ваши часы.\nПохоже, они давно спешат.",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    6,
-			LocID:    2,
-			Name:     "🗑️  Мусорное ведро",
-			About:    "Обычный кухонный мусор: упаковки от продуктов, салфетки и пустая бутылка.\nНичего необычного.",
-			Searched: false,
-			IsClue:   false,
-		},
-		{
-			ObjID:    7,
-			LocID:    2,
-			Name:     "🗄️  Нижний шкаф",
-			About:    "Дверца одного из шкафов немного перекошена.\nЗа посудой ничего необычного нет, но задняя деревянная панель закреплена только с одной стороны.\nЗа панелью спрятана книга в тёмно-зелёном переплёте: «The Black Orchard».",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    8,
-			LocID:    2,
-			Name:     "🚪  Задняя дверь",
-			About:    "Дверь ведёт во двор.\nЗамок исправен.\nСнаружи земля мокрая после дождя, но возле порога множество старых следов обуви — \nопределить, кому они принадлежат, невозможно.",
-			Searched: false,
-			IsClue:   false,
-		},
+// 		// КУХНЯ
+// 		{
+// 			ObjID:    5,
+// 			LocID:    2,
+// 			Name:     "🕰️   Часы",
+// 			About:    "Кухонные часы показывают время на 11 минут больше, чем ваши часы.\nПохоже, они давно спешат.",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    6,
+// 			LocID:    2,
+// 			Name:     "🗑️  Мусорное ведро",
+// 			About:    "Обычный кухонный мусор: упаковки от продуктов, салфетки и пустая бутылка.\nНичего необычного.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
+// 		{
+// 			ObjID:    7,
+// 			LocID:    2,
+// 			Name:     "🗄️  Нижний шкаф",
+// 			About:    "Дверца одного из шкафов немного перекошена.\nЗа посудой ничего необычного нет, но задняя деревянная панель закреплена только с одной стороны.\nЗа панелью спрятана книга в тёмно-зелёном переплёте: «The Black Orchard».",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    8,
+// 			LocID:    2,
+// 			Name:     "🚪  Задняя дверь",
+// 			About:    "Дверь ведёт во двор.\nЗамок исправен.\nСнаружи земля мокрая после дождя, но возле порога множество старых следов обуви — \nопределить, кому они принадлежат, невозможно.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
 
-		// БИБЛИОТЕКА
-		{
-			ObjID:    9,
-			LocID:    3,
-			Name:     "🩸  Тело",
-			About:    "Эдвард лежит возле письменного стола.\nНа затылке глубокая рана.\nРядом на ковре лежит тяжёлый бронзовый подсвечник со следами крови.\nНа руке Эдварда разбиты наручные часы.\nСтрелки остановились на 20:37.",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    10,
-			LocID:    3,
-			Name:     "🖌️  Письменный стол",
-			About:    "На столе лежат раскрытая записная книжка, несколько счетов и ручка.\nНа деревянном краю заметно небольшое пятно синей краски.",
-			Searched: false,
-			IsClue:   false,
-		},
-		{
-			ObjID:    11,
-			LocID:    3,
-			Name:     "🪟  Окно",
-			About:    "Окно закрыто изнутри.\nНа подоконнике лежит ровный слой пыли —\nследов рук или попытки открыть окно нет.",
-			Searched: false,
-			IsClue:   false,
-		},
-		{
-			ObjID:    12,
-			LocID:    3,
-			Name:     "🕯️  Камин",
-			About:    "В камине среди золы виден кусок бумаги, который не сгорел полностью.\nНа сохранившейся части можно разобрать:\nMORRIS CONSULTING\nInvoice #0417\n£4,800",
-			Searched: false,
-			IsClue:   true,
-		},
-		{
-			ObjID:    13,
-			LocID:    3,
-			Name:     "📥  Витрина",
-			About:    "Стеклянная витрина не повреждена, но одна полка пуста.\nНа табличке указано: «The Black Orchard. First edition».\nЗамок цел. Следов взлома нет.",
-			Searched: false,
-			IsClue:   false,
-			Key:      true,
-		},
-	}
-	return objCollect
-}
+// 		// БИБЛИОТЕКА
+// 		{
+// 			ObjID:    9,
+// 			LocID:    3,
+// 			Name:     "🩸  Тело",
+// 			About:    "Эдвард лежит возле письменного стола.\nНа затылке глубокая рана.\nРядом на ковре лежит тяжёлый бронзовый подсвечник со следами крови.\nНа руке Эдварда разбиты наручные часы.\nСтрелки остановились на 20:37.",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    10,
+// 			LocID:    3,
+// 			Name:     "🖌️  Письменный стол",
+// 			About:    "На столе лежат раскрытая записная книжка, несколько счетов и ручка.\nНа деревянном краю заметно небольшое пятно синей краски.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
+// 		{
+// 			ObjID:    11,
+// 			LocID:    3,
+// 			Name:     "🪟  Окно",
+// 			About:    "Окно закрыто изнутри.\nНа подоконнике лежит ровный слой пыли —\nследов рук или попытки открыть окно нет.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 		},
+// 		{
+// 			ObjID:    12,
+// 			LocID:    3,
+// 			Name:     "🕯️  Камин",
+// 			About:    "В камине среди золы виден кусок бумаги, который не сгорел полностью.\nНа сохранившейся части можно разобрать:\nMORRIS CONSULTING\nInvoice #0417\n£4,800",
+// 			Searched: false,
+// 			IsClue:   true,
+// 		},
+// 		{
+// 			ObjID:    13,
+// 			LocID:    3,
+// 			Name:     "📥  Витрина",
+// 			About:    "Стеклянная витрина не повреждена, но одна полка пуста.\nНа табличке указано: «The Black Orchard. First edition».\nЗамок цел. Следов взлома нет.",
+// 			Searched: false,
+// 			IsClue:   false,
+// 			Key:      true,
+// 		},
+// 	}
+// 	return objCollect
+// }
 
 func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 	for {
@@ -181,9 +190,9 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 
 		// показать инфу
 		// не осматривали, найдена улика
-		if game.Objects[realIndex].Searched == false &&
+		if game.SearchedObjects[realIndex] == false &&
 			game.Objects[realIndex].IsClue {
-			game.Objects[realIndex].Searched = true
+			game.SearchedObjects[realIndex] = true
 			fmt.Println()
 			fmt.Println("====================")
 			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
@@ -202,9 +211,9 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			// fmt.Println()
 
 			// не осматривали, нет улики
-		} else if game.Objects[realIndex].Searched == false &&
+		} else if game.SearchedObjects[realIndex] == false &&
 			game.Objects[realIndex].IsClue == false {
-			game.Objects[realIndex].Searched = true
+			game.SearchedObjects[realIndex] = true
 			fmt.Println()
 			fmt.Println("====================")
 			fmt.Printf("%s:\n", game.Objects[realIndex].Name)
@@ -221,7 +230,7 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			// fmt.Println()
 
 			// осматривали, была улика
-		} else if game.Objects[realIndex].Searched == true &&
+		} else if game.SearchedObjects[realIndex] == true &&
 			game.Objects[realIndex].IsClue == true {
 			fmt.Println()
 			fmt.Println("====================")
@@ -239,7 +248,7 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 			// fmt.Println()
 
 			// осматривали, не было улики
-		} else if game.Objects[realIndex].Searched == true &&
+		} else if game.SearchedObjects[realIndex] == true &&
 			game.Objects[realIndex].IsClue == false {
 			fmt.Println()
 			fmt.Println("====================")
@@ -274,7 +283,7 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 func KeyObj(game *GameState) int {
 	keys := 0
 	for _, obj := range game.Objects {
-		if obj.Key && obj.Searched {
+		if obj.Key && game.SearchedObjects[obj.ObjID] {
 			keys += 1
 		}
 	}

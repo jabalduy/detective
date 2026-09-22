@@ -22,21 +22,26 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 
 	objStat := 0
 	for _, obj := range game.Objects {
-		if obj.Searched {
+		if game.SearchedObjects[obj.ObjID] {
 			objStat += 1
 		}
 	}
 
 	clueStat := 0
 	for _, clue := range game.Clues {
-		if clue.Found {
+		if game.FoundClues[clue.ObjID] {
 			clueStat += 1
 		}
 	}
 
 	dialStat := 0
 	for _, dial := range game.Dialogues {
-		if dial.Asked {
+		dialKey := DialogueID{
+			SusID:  dial.SusID,
+			DialID: dial.DialID,
+		}
+
+		if game.AskedDialogues[dialKey] {
 			dialStat += 1
 		}
 	}
@@ -73,7 +78,12 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 		hasStatements := false
 
 		for _, dialogue := range game.Dialogues {
-			if dialogue.Asked && dialogue.SusID == i+1 {
+			dialKey := DialogueID{
+				SusID:  dialogue.SusID,
+				DialID: dialogue.DialID,
+			}
+
+			if game.AskedDialogues[dialKey] && dialogue.SusID == i+1 {
 
 				if !hasStatements {
 					fmt.Printf("%s:\n", game.Suspects[i].Name)

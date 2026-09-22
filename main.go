@@ -6,6 +6,11 @@ type GameState struct {
 	Locations []Location
 	Objects   []Object
 	Dialogues []Dialogue
+
+	FoundClues      map[int]bool
+	SearchedObjects map[int]bool
+	AskedDialogues  map[DialogueID]bool
+	OpenDialogues   map[DialogueID]bool
 }
 
 func main() {
