@@ -21,7 +21,7 @@ func requirementMet(state *GameState, req Requirement) bool {
 	}
 }
 
-func RequirementMet(state *GameState, requirements []Requirement) bool {
+func RequirementsMet(state *GameState, requirements []Requirement) bool {
 	for _, req := range requirements {
 		if !requirementMet(state, req) {
 			return false
@@ -29,4 +29,27 @@ func RequirementMet(state *GameState, requirements []Requirement) bool {
 	}
 
 	return true
+}
+
+func UpdateOpenDialogues(state *GameState) int {
+	unlocked := 0
+
+	for _, dialogue := range state.Dialogues {
+		id := dialogue.ID()
+
+		if state.OpenDialogues[id] {
+			continue
+		}
+
+		if len(dialogue.Requirments) == 0 {
+			continue
+		}
+
+		if RequirementsMet(state, dialogue.Requirments) {
+			state.OpenDialogues[id] = true
+			unlocked++
+		}
+	}
+
+	return unlocked
 }

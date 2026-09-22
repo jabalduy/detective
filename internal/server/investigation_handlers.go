@@ -128,26 +128,23 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 
 			if state.Objects[i].IsClue {
 				for clueIndex := range state.Clues {
-					if state.Clues[clueIndex].ObjID == objID {
-						state.FoundClues[objID] = true
-
-						response.ClueFound = true
-						response.ClueName = state.Clues[clueIndex].Name
-						response.ClueAbout = state.Clues[clueIndex].About
-
-						for dialIndex := range state.Dialogues {
-							if state.Dialogues[dialIndex].ObjID == objID {
-								state.Dialogues[dialIndex].IsClue = true
-								state.OpenDialogues[state.Dialogues[dialIndex].ID()] = true
-
-								response.DialogueUnlocked = true
-							}
-						}
-
-						break
+					if state.Clues[clueIndex].ObjID != objID {
+						continue
 					}
+
+					state.FoundClues[objID] = true
+
+					response.ClueFound = true
+					response.ClueName = state.Clues[clueIndex].Name
+					response.ClueAbout = state.Clues[clueIndex].About
+
+					break
 				}
 			}
+
+			unlocked := game.UpdateOpenDialogues(state)
+
+			response.DialogueUnlocked = unlocked > 0
 
 			w.Header().Set("Content-Type", "application/json")
 

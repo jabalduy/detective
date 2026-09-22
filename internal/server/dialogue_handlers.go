@@ -120,12 +120,10 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 		if state.Dialogues[i].SusID == susID &&
 			state.Dialogues[i].DialID == dialID &&
 			state.OpenDialogues[dialogue.ID()] {
-			dialKey := game.DialogueID{
-				SusID:  dialogue.SusID,
-				DialID: dialogue.DialID,
-			}
 
-			state.AskedDialogues[dialKey] = true
+			state.AskedDialogues[dialogue.ID()] = true
+			game.UpdateOpenDialogues(state)
+
 			response = state.Dialogues[i]
 			found = true
 		}

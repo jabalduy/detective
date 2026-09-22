@@ -45,7 +45,13 @@
         "obj_id": 9,
         "asked": false,
         "fact": "Джозеф признаёт, что назвал время ухода приблизительно\nи мог уйти на 10–15 минут раньше.",
-        "key": false
+        "key": false,
+        "requirements": [
+            {
+                "type": "clue_found",
+                "id": 9
+            }
+        ]
     },
     {
         "sus_id": 2,
@@ -93,7 +99,13 @@
         "obj_id": 5,
         "asked": false,
         "fact": "Моника подтверждает, что определяла время по кухонным часам,\nкоторые спешат на 11 минут.",
-        "key": false
+        "key": false,
+        "requirements": [
+            {
+                "type": "clue_found",
+                "id": 5
+            }
+        ]
     },
     {
         "sus_id": 3,
@@ -141,7 +153,13 @@
         "obj_id": 3,
         "asked": false,
         "fact": "Томас отказывается рассказывать о своих отношениях с Эмили\nи утверждает, что они не связаны с убийством.",
-        "key": false
+        "key": false,
+        "requirements": [
+            {
+                "type": "clue_found",
+                "id": 3
+            }
+        ]
     },
     {
         "sus_id": 4,
@@ -189,7 +207,13 @@
         "obj_id": 12,
         "asked": false,
         "fact": "Карен утверждает, что знает название MORRIS CONSULTING,\nно не знает, почему счёт оказался в камине.",
-        "key": true
+        "key": true,
+        "requirements": [
+            {
+                "type": "clue_found",
+                "id": 12
+            }
+        ]
     },
     {
         "sus_id": 5,
