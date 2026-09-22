@@ -5,6 +5,7 @@ import (
 	"detective/internal/cases"
 	"detective/internal/game"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -12,6 +13,8 @@ import (
 
 var games = make(map[string]*Session)
 var gamesMu sync.Mutex
+
+var ErrGameNotStarted = errors.New("game not started")
 
 type Session struct {
 	State *game.GameState
@@ -59,13 +62,8 @@ func getGame(w http.ResponseWriter, r *http.Request) (*Session, error) {
 		return session, nil
 	}
 
-	state, err := newGame("case_017")
-	if err != nil {
-		return nil, err
-	}
-
 	session = &Session{
-		State: state,
+		State: nil,
 	}
 
 	games[sessionID] = session

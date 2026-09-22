@@ -22,23 +22,32 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 	caseID := r.URL.Query().Get("caseID")
 	if caseID == "" {
-		caseID = "case_017"
+		http.Error(w, "caseID is required", http.StatusBadRequest)
+		return
 	}
 
-	sessionID := getSessionID(w, r)
 	state, err := newGame(caseID)
 	if err != nil {
 		if errors.Is(err, cases.ErrCaseNotFound) {
-			log.Printf("start game: unknown case: caseID=%q err=%v", caseID, err)
+			log.Printf(
+				"start game: unknown case: caseID=%q err=%v",
+				caseID,
+				err,
+			)
+
 			http.Error(
 				w,
-				"Не удалось загрузить игру",
-				http.StatusInternalServerError,
+				"case not found",
+				http.StatusNotFound,
 			)
 			return
 		}
 
-		log.Printf("start game: caseID=%q err=%v", caseID, err)
+		log.Printf(
+			"start game: caseID=%q err=%v",
+			caseID,
+			err,
+		)
 
 		http.Error(
 			w,
@@ -48,13 +57,29 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session := &Session{
-		State: state,
+	session, err := getGame(w, r)
+	if err != nil {
+		log.Printf("start game: get session: %v", err)
+
+		http.Error(
+			w,
+			"innternal server error",
+			http.StatusInternalServerError,
+		)
+		return
 	}
 
-	gamesMu.Lock()
-	games[sessionID] = session
-	gamesMu.Unlock()
+	session.Mu.Lock()
+	session.State = state
+	session.Mu.Unlock()
+
+	response := StartResponse{
+		Status:    "started",
+		Title:     state.Case.Title,
+		Message:   "Расследование начато",
+		Intro:     state.Case.Intro,
+		KnownInfo: state.Case.KnownInfo,
+	}
 
 	response := StartResponse{
 		Status:    "started",
