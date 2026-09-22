@@ -71,7 +71,6 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 				Name:     obj.Name,
 				About:    obj.About,
 				ObjID:    obj.ObjID,
-				IsClue:   obj.IsClue,
 				Key:      obj.Key,
 				Searched: state.SearchedObjects[obj.ObjID],
 			}
@@ -119,42 +118,42 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := range state.Objects {
-		if state.Objects[i].ObjID == objID {
-
-			state.SearchedObjects[objID] = true
-			response := InspectResponse{
-				Object: state.Objects[i],
-			}
-
-			if state.Objects[i].IsClue {
-				for clueIndex := range state.Clues {
-					if state.Clues[clueIndex].ObjID != objID {
-						continue
-					}
-
-					state.FoundClues[objID] = true
-
-					response.ClueFound = true
-					response.ClueName = state.Clues[clueIndex].Name
-					response.ClueAbout = state.Clues[clueIndex].About
-
-					break
-				}
-			}
-
-			unlocked := game.UpdateOpenDialogues(state)
-
-			response.DialogueUnlocked = unlocked > 0
-
-			w.Header().Set("Content-Type", "application/json")
-
-			err := json.NewEncoder(w).Encode(response)
-			if err != nil {
-				http.Error(w, "Не удалось отправить объект", http.StatusInternalServerError)
-			}
-
-			return
+		if state.Objects[i].ObjID != objID {
+			continue
 		}
+
+		object := state.Objects[i]
+
+		state.SearchedObjects[objID] = true
+
+		response := InspectResponse{
+			Object: state.Objects[i],
+		}
+
+		game.PerformAction(state, object.InspectAction)
+
+		if state.FoundClues[objID] {
+			for clueIndex := range state.Clues {
+				if state.Clues[clueIndex].ObjID != objID {
+					continue
+				}
+
+				response.ClueFound = true
+				response.ClueName = state.Clues[clueIndex].Name
+				response.ClueAbout = state.Clues[clueIndex].About
+
+				break
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, "Не удалось отправить объект", http.StatusInternalServerError)
+		}
+
+		return
+
 	}
 
 	http.Error(w, "Объект не найден", http.StatusNotFound)

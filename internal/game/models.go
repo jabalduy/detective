@@ -8,12 +8,13 @@ type Clue struct {
 }
 
 type Object struct {
-	LocID  int    `json:"loc_id"`
-	Name   string `json:"name"`
-	About  string `json:"about"`
-	ObjID  int    `json:"obj_id"`
-	IsClue bool   `json:"is_clue"`
-	Key    bool   `json:"key"`
+	LocID int    `json:"loc_id"`
+	Name  string `json:"name"`
+	About string `json:"about"`
+	ObjID int    `json:"obj_id"`
+	Key   bool   `json:"key"`
+
+	InspectAction Action `json:"inspect_action"`
 }
 
 type ObjectResponse struct {
@@ -21,7 +22,6 @@ type ObjectResponse struct {
 	Name     string `json:"name"`
 	About    string `json:"about"`
 	ObjID    int    `json:"obj_id"`
-	IsClue   bool   `json:"is_clue"`
 	Key      bool   `json:"key"`
 	Searched bool   `json:"searched"`
 }
@@ -54,8 +54,7 @@ type Dialogue struct {
 	Fact   string `json:"fact"`
 	Key    bool   `json:"key"`
 
-	Requirments []Requirement `json:"requirments"`
-	Effects     []Effect      `json:"effects"`
+	Action
 }
 
 type DialogueID struct {

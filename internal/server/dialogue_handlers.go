@@ -121,9 +121,13 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 			state.Dialogues[i].DialID == dialID &&
 			state.OpenDialogues[dialogue.ID()] {
 
+			if !state.OpenDialogues[dialogue.ID()] {
+				http.Error(w, "Диалог недоступен", http.StatusForbidden)
+				return
+			}
+
 			state.AskedDialogues[dialogue.ID()] = true
-			game.ApplyEffects(state, dialogue.Effects)
-			game.UpdateOpenDialogues(state)
+			game.PerformAction(state, dialogue.Action)
 
 			response = state.Dialogues[i]
 			found = true

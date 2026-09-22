@@ -41,11 +41,11 @@ func UpdateOpenDialogues(state *GameState) int {
 			continue
 		}
 
-		if len(dialogue.Requirments) == 0 {
+		if len(dialogue.Requirements) == 0 {
 			continue
 		}
 
-		if RequirementsMet(state, dialogue.Requirments) {
+		if RequirementsMet(state, dialogue.Requirements) {
 			state.OpenDialogues[id] = true
 			unlocked++
 		}
