@@ -1,7 +1,9 @@
 package server
 
 import (
+	"detective/internal/cases"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 )
@@ -18,11 +20,31 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	caseID := r.URL.Query().Get("caseID")
+	if caseID == "" {
+		caseID = "case_017"
+	}
+
 	sessionID := getSessionID(w, r)
-	state, err := newGame()
+	state, err := newGame(caseID)
 	if err != nil {
-		log.Printf("new game: %v", err)
-		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		if errors.Is(err, cases.ErrCaseNotFound) {
+			log.Printf("start game: unknown case: caseID=%q err=%v", caseID, err)
+			http.Error(
+				w,
+				"Не удалось загрузить игру",
+				http.StatusInternalServerError,
+			)
+			return
+		}
+
+		log.Printf("start game: caseID=%q err=%v", caseID, err)
+
+		http.Error(
+			w,
+			"internal server error",
+			http.StatusInternalServerError,
+		)
 		return
 	}
 

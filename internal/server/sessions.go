@@ -5,6 +5,7 @@ import (
 	"detective/internal/cases"
 	"detective/internal/game"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -58,7 +59,7 @@ func getGame(w http.ResponseWriter, r *http.Request) (*Session, error) {
 		return session, nil
 	}
 
-	state, err := newGame()
+	state, err := newGame("case_017")
 	if err != nil {
 		return nil, err
 	}
@@ -72,10 +73,17 @@ func getGame(w http.ResponseWriter, r *http.Request) (*Session, error) {
 	return session, nil
 }
 
-func newGame() (*game.GameState, error) {
-	caseDef, err := cases.LoadCase("cases/case_017")
+func newGame(caseID string) (*game.GameState, error) {
+	registry := cases.NewCaseRegistry()
+
+	casePath, err := registry.GetPath(caseID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get case %q from registry: %w", caseID, err)
+	}
+
+	caseDef, err := cases.LoadCase(casePath)
+	if err != nil {
+		return nil, fmt.Errorf("load case %q: %w", caseID, err)
 	}
 
 	return &game.GameState{
