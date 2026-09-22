@@ -2,36 +2,11 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
 
-type Dialogue struct {
-	SusID    int    `json:"sus_id"`
-	DialID   int    `json:"dial_id"`
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
-
-	InitiallyOpen bool `json:"is_open"`
-
-	IsClue bool   `json:"is_clue"`
-	ObjID  int    `json:"obj_id"`
-	Fact   string `json:"fact"`
-	Key    bool   `json:"key"`
-}
-
-type DialogueID struct {
-	SusID  int
-	DialID int
-}
-
-func (d Dialogue) ID() DialogueID {
-	return DialogueID{
-		SusID:  d.SusID,
-		DialID: d.DialID,
-	}
-}
-
-func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
+func ChooseQuestion(game *game.GameState, choiceSus int, scanner *bufio.Scanner) {
 	for {
 		ClearScreen()
 
@@ -85,12 +60,7 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 				Pause(scanner)
 				ClearScreen()
 
-				dialKey := DialogueID{
-					SusID:  dial.SusID,
-					DialID: dial.DialID,
-				}
-
-				game.AskedDialogues[dialKey] = true
+				game.AskedDialogues[dial.ID()] = true
 				continue
 			}
 		}
@@ -102,22 +72,6 @@ func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {
 		}
 
 	}
-}
-
-func KeyDial(game *GameState) int {
-	keys := 0
-
-	for _, dial := range game.Dialogues {
-		dialKey := DialogueID{
-			SusID:  dial.SusID,
-			DialID: dial.DialID,
-		}
-
-		if dial.Key && game.AskedDialogues[dialKey] {
-			keys += 1
-		}
-	}
-	return keys
 }
 
 // func CreateDialogue() []Dialogue {

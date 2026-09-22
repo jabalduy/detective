@@ -2,15 +2,9 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
-
-type Clue struct {
-	Name  string `json:"name"`
-	About string `json:"about"`
-	ObjID int    `json:"obj_id"`
-	Key   bool   `json:"key"`
-}
 
 // func CreateClue() []Clue {
 // 	clueCollect := []Clue{
@@ -62,7 +56,7 @@ type Clue struct {
 // 	return clueCollect
 // }
 
-func ShowClues(game *GameState, scanner *bufio.Scanner) {
+func ShowClues(game *game.GameState, scanner *bufio.Scanner) {
 
 	// показать найденные улики
 	fmt.Println()
@@ -83,7 +77,7 @@ func ShowClues(game *GameState, scanner *bufio.Scanner) {
 	}
 }
 
-func FoundClue(game *GameState, objID int) {
+func FoundClue(game *game.GameState, objID int) {
 	for _, clue := range game.Clues {
 		if clue.ObjID == objID {
 			PrintStar()
@@ -115,14 +109,4 @@ func PrintStar() {
 
       НАЙДЕНА УЛИКА
 	  ` + Reset)
-}
-
-func KeyClues(game *GameState) int {
-	keys := 0
-	for _, clue := range game.Clues {
-		if clue.Key && game.FoundClues[clue.ObjID] {
-			keys += 1
-		}
-	}
-	return keys
 }

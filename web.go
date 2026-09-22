@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/rand"
+	"detective/internal/cases"
+	"detective/internal/game"
 	"encoding/hex"
 	"encoding/json"
 	"log"
@@ -20,24 +22,24 @@ type StartResponse struct {
 }
 
 type InspectResponse struct {
-	Object           Object `json:"object"`
-	ClueFound        bool   `json:"clueFound"`
-	ClueName         string `json:"clueName"`
-	ClueAbout        string `json:"clueAbout"`
-	DialogueUnlocked bool   `json:"dialogueUnlocked"`
+	Object           game.Object `json:"object"`
+	ClueFound        bool        `json:"clueFound"`
+	ClueName         string      `json:"clueName"`
+	ClueAbout        string      `json:"clueAbout"`
+	DialogueUnlocked bool        `json:"dialogueUnlocked"`
 }
 
 type CaseResponse struct {
-	Intro           string     `json:"intro"`
-	KnownInfo       string     `json:"knownInfo"`
-	FoundClues      []Clue     `json:"foundClues"`
-	KnownFacts      []Dialogue `json:"knownFacts"`
-	CluesFound      int        `json:"cluesFound"`
-	CluesTotal      int        `json:"cluesTotal"`
-	ObjectsSearched int        `json:"objectsSearched"`
-	ObjectsTotal    int        `json:"objectsTotal"`
-	DialoguesAsked  int        `json:"dialoguesAsked"`
-	DialoguesTotal  int        `json:"dialoguesTotal"`
+	Intro           string          `json:"intro"`
+	KnownInfo       string          `json:"knownInfo"`
+	FoundClues      []game.Clue     `json:"foundClues"`
+	KnownFacts      []game.Dialogue `json:"knownFacts"`
+	CluesFound      int             `json:"cluesFound"`
+	CluesTotal      int             `json:"cluesTotal"`
+	ObjectsSearched int             `json:"objectsSearched"`
+	ObjectsTotal    int             `json:"objectsTotal"`
+	DialoguesAsked  int             `json:"dialoguesAsked"`
+	DialoguesTotal  int             `json:"dialoguesTotal"`
 }
 
 type AccuseResponse struct {
@@ -45,24 +47,12 @@ type AccuseResponse struct {
 	TextEnd string `json:"textEnd"`
 }
 
-// type ObjectResponse struct {
-//     Name     string `json:"name"`
-//     Searched bool   `json:"searched"`
-//     ObjID    int    `json:"objID"`
-// }
-
-// type LocationResponse struct {
-//     Name     string `json:"name"`
-//     About bool   `json:"about"`
-//     LocID    int    `json:"locID"`
-// }
-
-var games = make(map[string]*GameState)
+var games = make(map[string]*game.GameState)
 var gamesMu sync.Mutex
 var gameMu sync.Mutex
 
 // ИГРОВАЯ СЕССИЯ
-func getGame(w http.ResponseWriter, r *http.Request) (*GameState, error) {
+func getGame(w http.ResponseWriter, r *http.Request) (*game.GameState, error) {
 	sessionID := getSessionID(w, r)
 
 	gamesMu.Lock()
@@ -93,13 +83,13 @@ func newSessionID() string {
 	return hex.EncodeToString(bytes)
 }
 
-func newGame() (*GameState, error) {
-	caseDef, err := LoadCase("cases/case_017")
+func newGame() (*game.GameState, error) {
+	caseDef, err := cases.LoadCase("cases/case_017")
 	if err != nil {
 		return nil, err
 	}
 
-	return &GameState{
+	return &game.GameState{
 		Suspects:  caseDef.Suspects,
 		Clues:     caseDef.Clues,
 		Locations: caseDef.Locations,
@@ -108,9 +98,9 @@ func newGame() (*GameState, error) {
 
 		FoundClues:      make(map[int]bool),
 		SearchedObjects: make(map[int]bool),
-		AskedDialogues:  make(map[DialogueID]bool),
+		AskedDialogues:  make(map[game.DialogueID]bool),
 
-		OpenDialogues: initOpenDialogues(caseDef.Dialogues),
+		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}, nil
 }
 
@@ -176,7 +166,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 // ЛОКАЦИИ, ОБЪЕКТЫ, РАССЛЕДОВАНИЕ
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -186,14 +176,14 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(game.Locations)
+	err = json.NewEncoder(w).Encode(state.Locations)
 	if err != nil {
 		http.Error(w, "Не удалось отправить комнаты", http.StatusInternalServerError)
 		return
@@ -202,9 +192,9 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
 	// ПОЛУЧИТЬ ИГРУ
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
-		log.Printf("new game: %v", err)
+		log.Printf("new state: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
@@ -212,7 +202,7 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
@@ -226,18 +216,18 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	objectsResponse := make([]ObjectResponse, 0)
+	objectsResponse := make([]game.ObjectResponse, 0)
 
-	for _, obj := range game.Objects {
+	for _, obj := range state.Objects {
 		if obj.LocID == locID {
-			newObj := ObjectResponse{
+			newObj := game.ObjectResponse{
 				LocID:    obj.LocID,
 				Name:     obj.Name,
 				About:    obj.About,
 				ObjID:    obj.ObjID,
 				IsClue:   obj.IsClue,
 				Key:      obj.Key,
-				Searched: game.SearchedObjects[obj.ObjID],
+				Searched: state.SearchedObjects[obj.ObjID],
 			}
 			objectsResponse = append(objectsResponse, newObj)
 		}
@@ -253,7 +243,7 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -263,7 +253,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
@@ -281,27 +271,27 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for i := range game.Objects {
-		if game.Objects[i].ObjID == objID {
+	for i := range state.Objects {
+		if state.Objects[i].ObjID == objID {
 
-			game.SearchedObjects[objID] = true
+			state.SearchedObjects[objID] = true
 			response := InspectResponse{
-				Object: game.Objects[i],
+				Object: state.Objects[i],
 			}
 
-			if game.Objects[i].IsClue {
-				for clueIndex := range game.Clues {
-					if game.Clues[clueIndex].ObjID == objID {
-						game.FoundClues[objID] = true
+			if state.Objects[i].IsClue {
+				for clueIndex := range state.Clues {
+					if state.Clues[clueIndex].ObjID == objID {
+						state.FoundClues[objID] = true
 
 						response.ClueFound = true
-						response.ClueName = game.Clues[clueIndex].Name
-						response.ClueAbout = game.Clues[clueIndex].About
+						response.ClueName = state.Clues[clueIndex].Name
+						response.ClueAbout = state.Clues[clueIndex].About
 
-						for dialIndex := range game.Dialogues {
-							if game.Dialogues[dialIndex].ObjID == objID {
-								game.Dialogues[dialIndex].IsClue = true
-								game.OpenDialogues[game.Dialogues[dialIndex].ID()] = true
+						for dialIndex := range state.Dialogues {
+							if state.Dialogues[dialIndex].ObjID == objID {
+								state.Dialogues[dialIndex].IsClue = true
+								state.OpenDialogues[state.Dialogues[dialIndex].ID()] = true
 
 								response.DialogueUnlocked = true
 							}
@@ -328,7 +318,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 
 // ПОДОЗРЕВАЕМЫЕ, ДИАЛОГИ
 func suspectsHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -338,14 +328,14 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(game.Suspects)
+	err = json.NewEncoder(w).Encode(state.Suspects)
 	if err != nil {
 		http.Error(w, "Не удалось отправить подозреваемых", http.StatusInternalServerError)
 		return
@@ -353,9 +343,9 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
-		log.Printf("new game: %v", err)
+		log.Printf("new state: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
@@ -363,7 +353,7 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
@@ -376,11 +366,11 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dialogues []Dialogue
+	var dialogues []game.Dialogue
 
-	for i := range game.Dialogues {
-		if game.Dialogues[i].SusID == susID && game.OpenDialogues[game.Dialogues[i].ID()] {
-			dialogues = append(dialogues, game.Dialogues[i])
+	for i := range state.Dialogues {
+		if state.Dialogues[i].SusID == susID && state.OpenDialogues[state.Dialogues[i].ID()] {
+			dialogues = append(dialogues, state.Dialogues[i])
 		}
 	}
 
@@ -394,7 +384,7 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -404,7 +394,7 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
@@ -428,20 +418,20 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var response Dialogue
+	var response game.Dialogue
 
 	found := false
-	for i, dialogue := range game.Dialogues {
-		if game.Dialogues[i].SusID == susID &&
-			game.Dialogues[i].DialID == dialID &&
-			game.OpenDialogues[dialogue.ID()] {
-			dialKey := DialogueID{
+	for i, dialogue := range state.Dialogues {
+		if state.Dialogues[i].SusID == susID &&
+			state.Dialogues[i].DialID == dialID &&
+			state.OpenDialogues[dialogue.ID()] {
+			dialKey := game.DialogueID{
 				SusID:  dialogue.SusID,
 				DialID: dialogue.DialID,
 			}
 
-			game.AskedDialogues[dialKey] = true
-			response = game.Dialogues[i]
+			state.AskedDialogues[dialKey] = true
+			response = state.Dialogues[i]
 			found = true
 		}
 	}
@@ -459,28 +449,11 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func initOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {
-	openDialogues := make(map[DialogueID]bool)
-
-	for _, dialogue := range dialogues {
-		if dialogue.InitiallyOpen {
-			dialKey := DialogueID{
-				SusID:  dialogue.SusID,
-				DialID: dialogue.DialID,
-			}
-
-			openDialogues[dialKey] = true
-		}
-	}
-
-	return openDialogues
-}
-
 // ДОСЬЕ
 func caseHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
-		log.Printf("new game: %v", err)
+		log.Printf("new state: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
@@ -488,41 +461,41 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
 
 	response := CaseResponse{}
 
-	for _, clue := range game.Clues {
-		if game.FoundClues[clue.ObjID] {
+	for _, clue := range state.Clues {
+		if state.FoundClues[clue.ObjID] {
 			response.FoundClues = append(response.FoundClues, clue)
 			response.CluesFound++
 		}
 	}
 
-	for _, dial := range game.Dialogues {
-		dialKey := DialogueID{
+	for _, dial := range state.Dialogues {
+		dialKey := game.DialogueID{
 			SusID:  dial.SusID,
 			DialID: dial.DialID,
 		}
 
-		if game.AskedDialogues[dialKey] {
+		if state.AskedDialogues[dialKey] {
 			response.KnownFacts = append(response.KnownFacts, dial)
 			response.DialoguesAsked++
 		}
 	}
 
-	for _, obj := range game.Objects {
-		if game.SearchedObjects[obj.ObjID] {
+	for _, obj := range state.Objects {
+		if state.SearchedObjects[obj.ObjID] {
 			response.ObjectsSearched++
 		}
 	}
 
-	response.CluesTotal = len(game.Clues)
-	response.DialoguesTotal = len(game.Dialogues)
-	response.ObjectsTotal = len(game.Objects)
+	response.CluesTotal = len(state.Clues)
+	response.DialoguesTotal = len(state.Dialogues)
+	response.ObjectsTotal = len(state.Objects)
 
 	response.Intro = CaseIntro()
 	response.KnownInfo = CaseKnownInfo()
@@ -536,7 +509,7 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 
 // ОБВИНЕНИЕ
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
-	game, err := getGame(w, r)
+	state, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
@@ -546,7 +519,7 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
-	if game == nil {
+	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
 		return
 	}
@@ -564,7 +537,9 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keys := KeyClues(game) + KeyDial(game) + KeyObj(game)
+	keys := game.KeyClues(state) +
+		game.KeyDial(state) +
+		game.KeyObj(state)
 
 	response := AccuseResponse{}
 	if keys == 7 && susID == 4 {

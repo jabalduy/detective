@@ -2,19 +2,12 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
 
-type Suspect struct {
-	Name   string `json:"name"`
-	Age    int    `json:"age"`
-	About  string `json:"about"`
-	SusID  int    `json:"sus_id"`
-	IsClue bool   `json:"is_clue"`
-}
-
-func CreateSuspects() []Suspect {
-	susCollect := []Suspect{
+func CreateSuspects() []game.Suspect {
+	susCollect := []game.Suspect{
 		{
 			Name:  "👷🏽‍♂️ Джозеф",
 			Age:   54,
@@ -49,7 +42,7 @@ func CreateSuspects() []Suspect {
 	return susCollect
 }
 
-func ChooseSus(game *GameState, scanner *bufio.Scanner) {
+func ChooseSus(game *game.GameState, scanner *bufio.Scanner) {
 	for {
 
 		// текст выбрать подозреваемого

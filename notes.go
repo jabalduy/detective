@@ -2,10 +2,11 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
 
-func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
+func ShowCaseFile(game *game.GameState, scanner *bufio.Scanner) {
 	fmt.Println()
 	fmt.Println("=======================")
 	fmt.Println("	ДОСЬЕ ДЕЛА")
@@ -36,12 +37,8 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 
 	dialStat := 0
 	for _, dial := range game.Dialogues {
-		dialKey := DialogueID{
-			SusID:  dial.SusID,
-			DialID: dial.DialID,
-		}
 
-		if game.AskedDialogues[dialKey] {
+		if game.AskedDialogues[dial.ID()] {
 			dialStat += 1
 		}
 	}
@@ -78,12 +75,8 @@ func ShowCaseFile(game *GameState, scanner *bufio.Scanner) {
 		hasStatements := false
 
 		for _, dialogue := range game.Dialogues {
-			dialKey := DialogueID{
-				SusID:  dialogue.SusID,
-				DialID: dialogue.DialID,
-			}
 
-			if game.AskedDialogues[dialKey] && dialogue.SusID == i+1 {
+			if game.AskedDialogues[dialogue.ID()] && dialogue.SusID == i+1 {
 
 				if !hasStatements {
 					fmt.Printf("%s:\n", game.Suspects[i].Name)

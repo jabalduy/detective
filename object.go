@@ -2,27 +2,9 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
-
-type Object struct {
-	LocID  int    `json:"loc_id"`
-	Name   string `json:"name"`
-	About  string `json:"about"`
-	ObjID  int    `json:"obj_id"`
-	IsClue bool   `json:"is_clue"`
-	Key    bool   `json:"key"`
-}
-
-type ObjectResponse struct {
-	LocID    int    `json:"loc_id"`
-	Name     string `json:"name"`
-	About    string `json:"about"`
-	ObjID    int    `json:"obj_id"`
-	IsClue   bool   `json:"is_clue"`
-	Key      bool   `json:"key"`
-	Searched bool   `json:"searched"`
-}
 
 // func CreateObjects() []Object {
 // 	objCollect := []Object{
@@ -141,7 +123,7 @@ type ObjectResponse struct {
 // 	return objCollect
 // }
 
-func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
+func ChooseObjects(game *game.GameState, scanner *bufio.Scanner, choiceLoc int) {
 	for {
 		ClearScreen()
 
@@ -185,7 +167,7 @@ func ChooseObjects(game *GameState, scanner *bufio.Scanner, choiceLoc int) {
 	}
 }
 
-func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
+func ShowObject(game *game.GameState, realIndex int, scanner *bufio.Scanner) {
 	for {
 
 		// показать инфу
@@ -278,14 +260,4 @@ func ShowObject(game *GameState, realIndex int, scanner *bufio.Scanner) {
 		// 	continue
 		// }
 	}
-}
-
-func KeyObj(game *GameState) int {
-	keys := 0
-	for _, obj := range game.Objects {
-		if obj.Key && game.SearchedObjects[obj.ObjID] {
-			keys += 1
-		}
-	}
-	return keys
 }

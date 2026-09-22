@@ -2,10 +2,11 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
 
-func ChooseAccused(game *GameState, scanner *bufio.Scanner) bool {
+func ChooseAccused(game *game.GameState, scanner *bufio.Scanner) bool {
 	for {
 		fmt.Println()
 		fmt.Println("Выберите обвиняемого:")
@@ -46,7 +47,7 @@ func ChooseAccused(game *GameState, scanner *bufio.Scanner) bool {
 	}
 }
 
-func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
+func Sure(game *game.GameState, choiceAc int, scanner *bufio.Scanner) bool {
 	for {
 		fmt.Println()
 		fmt.Printf("Вы уверены, что обвиняете %s?\n", game.Suspects[choiceAc-1].Name)
@@ -82,8 +83,10 @@ func Sure(game *GameState, choiceAc int, scanner *bufio.Scanner) bool {
 	}
 }
 
-func Accuse(choiceAc int, game *GameState, scanner *bufio.Scanner) {
-	keys := KeyClues(game) + KeyDial(game) + KeyObj(game)
+func Accuse(choiceAc int, state *game.GameState, scanner *bufio.Scanner) {
+	keys := game.KeyClues(state) +
+		game.KeyDial(state) +
+		game.KeyObj(state)
 
 	if keys == 7 && choiceAc == 4 {
 		fmt.Println(WinEnding())

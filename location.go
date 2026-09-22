@@ -2,18 +2,12 @@ package main
 
 import (
 	"bufio"
+	"detective/internal/game"
 	"fmt"
 )
 
-type Location struct {
-	Name   string `json:"name"`
-	About  string `json:"about"`
-	Object Object `json:"-"`
-	LocID  int    `json:"loc_id"`
-}
-
-func CreateLocations() []Location {
-	locCollect := []Location{
+func CreateLocations() []game.Location {
+	locCollect := []game.Location{
 		{
 			Name:  "Гостиная",
 			About: "Небольшая гостиная рядом с главным коридором.\nНа диване лежат учебники,\nна журнальном столике стоит недопитый чай.",
@@ -33,7 +27,7 @@ func CreateLocations() []Location {
 	return locCollect
 }
 
-func ChooseLocations(game *GameState, scanner *bufio.Scanner) {
+func ChooseLocations(game *game.GameState, scanner *bufio.Scanner) {
 
 	for {
 		ClearScreen()

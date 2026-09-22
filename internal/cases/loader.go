@@ -1,6 +1,7 @@
-package main
+package cases
 
 import (
+	"detective/internal/game"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -53,13 +54,13 @@ func LoadCase(path string) (*CaseDefinition, error) {
 	return &caseDef, nil
 }
 
-func LoadClues(path string) ([]Clue, error) {
+func LoadClues(path string) ([]game.Clue, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var clues []Clue
+	var clues []game.Clue
 
 	err = json.Unmarshal(data, &clues)
 	if err != nil {
@@ -69,13 +70,13 @@ func LoadClues(path string) ([]Clue, error) {
 	return clues, nil
 }
 
-func LoadLocations(path string) ([]Location, error) {
+func LoadLocations(path string) ([]game.Location, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var locations []Location
+	var locations []game.Location
 
 	err = json.Unmarshal(data, &locations)
 	if err != nil {
@@ -85,13 +86,13 @@ func LoadLocations(path string) ([]Location, error) {
 	return locations, nil
 }
 
-func LoadObjects(path string) ([]Object, error) {
+func LoadObjects(path string) ([]game.Object, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var objects []Object
+	var objects []game.Object
 
 	err = json.Unmarshal(data, &objects)
 	if err != nil {
@@ -101,13 +102,13 @@ func LoadObjects(path string) ([]Object, error) {
 	return objects, nil
 }
 
-func LoadSuspects(path string) ([]Suspect, error) {
+func LoadSuspects(path string) ([]game.Suspect, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var suspects []Suspect
+	var suspects []game.Suspect
 
 	err = json.Unmarshal(data, &suspects)
 	if err != nil {
@@ -117,13 +118,13 @@ func LoadSuspects(path string) ([]Suspect, error) {
 	return suspects, nil
 }
 
-func LoadDialogues(path string) ([]Dialogue, error) {
+func LoadDialogues(path string) ([]game.Dialogue, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var dialogues []Dialogue
+	var dialogues []game.Dialogue
 
 	err = json.Unmarshal(data, &dialogues)
 	if err != nil {
