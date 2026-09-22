@@ -9,9 +9,8 @@ import (
 	"sync"
 )
 
-var games = make(map[string]*game.GameState)
+var games = make(map[string]*Session)
 var gamesMu sync.Mutex
-var gameMu sync.Mutex
 
 type Session struct {
 	State *game.GameState
@@ -48,24 +47,29 @@ func getSessionID(w http.ResponseWriter, r *http.Request) string {
 	return sessionID
 }
 
-func getGame(w http.ResponseWriter, r *http.Request) (*game.GameState, error) {
+func getGame(w http.ResponseWriter, r *http.Request) (*Session, error) {
 	sessionID := getSessionID(w, r)
 
 	gamesMu.Lock()
 	defer gamesMu.Unlock()
 
-	game, ok := games[sessionID]
+	session, ok := games[sessionID]
 	if ok {
-		return game, nil
+		return session, nil
 	}
 
-	game, err := newGame()
+	state, err := newGame()
 	if err != nil {
 		return nil, err
 	}
-	games[sessionID] = game
 
-	return game, nil
+	session = &Session{
+		State: state,
+	}
+
+	games[sessionID] = session
+
+	return session, nil
 }
 
 func newGame() (*game.GameState, error) {

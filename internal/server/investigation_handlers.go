@@ -10,15 +10,16 @@ import (
 
 // ЛОКАЦИИ, ОБЪЕКТЫ, РАССЛЕДОВАНИЕ
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
@@ -36,15 +37,16 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
 	// ПОЛУЧИТЬ ИГРУ
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new state: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
@@ -87,15 +89,16 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.Lock()
+	defer session.Mu.Unlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)

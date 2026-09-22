@@ -10,15 +10,16 @@ import (
 
 // ПОДОЗРЕВАЕМЫЕ, ДИАЛОГИ
 func suspectsHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
@@ -35,15 +36,16 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new state: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)
@@ -76,15 +78,16 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.Lock()
+	defer session.Mu.Unlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)

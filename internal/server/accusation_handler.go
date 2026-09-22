@@ -10,15 +10,16 @@ import (
 
 // ОБВИНЕНИЕ
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
-	state, err := getGame(w, r)
+	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
 		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
 		return
 	}
 
-	gameMu.Lock()
-	defer gameMu.Unlock()
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+	state := session.State
 
 	if state == nil {
 		http.Error(w, "Игра не запущена", http.StatusBadRequest)

@@ -49,10 +49,11 @@ type Dialogue struct {
 
 	InitiallyOpen bool `json:"is_open"`
 
-	IsClue bool   `json:"is_clue"`
-	ObjID  int    `json:"obj_id"`
-	Fact   string `json:"fact"`
-	Key    bool   `json:"key"`
+	IsClue      bool          `json:"is_clue"`
+	ObjID       int           `json:"obj_id"`
+	Fact        string        `json:"fact"`
+	Key         bool          `json:"key"`
+	Requirments []Requirement `json:"requirments"`
 }
 
 type DialogueID struct {
@@ -79,4 +80,11 @@ type CaseInfo struct {
 	Intro     string  `json:"intro"`
 	KnownInfo string  `json:"known_info"`
 	Endings   Endings `json:"endings"`
+}
+
+type Requirement struct {
+	Type   string `json:"type"`
+	ID     int    `json:"id"`
+	SusID  int    `json:"sus_id,omitempty"`
+	DialID int    `json:"dial_id,omitempty"`
 }
