@@ -17,6 +17,7 @@ func StartServer() {
 	http.HandleFunc("/ask-dialogue", askDialogueHandler)
 	http.HandleFunc("/case", caseHandler)
 	http.HandleFunc("/accuse", accuseHandler)
+	http.HandleFunc("/cases", casesHandler)
 
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))

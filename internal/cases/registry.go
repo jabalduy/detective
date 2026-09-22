@@ -8,19 +8,7 @@ import (
 var ErrCaseNotFound = errors.New("case not found")
 
 type CaseRegistry struct {
-	cases map[string]string
-}
-
-func NewCaseRegistry() *CaseRegistry {
-	return &CaseRegistry{
-		cases: map[string]CaseEntry{
-			"case_017": {
-				ID:    "case_017",
-				Title: "Последний экземпляр",
-				Path:  "cases/case_017",
-			},
-		},
-	}
+	cases map[string]CaseEntry
 }
 
 type CaseEntry struct {
@@ -31,17 +19,37 @@ type CaseEntry struct {
 
 func NewCaseRegistry() *CaseRegistry {
 	return &CaseRegistry{
-		cases: map[string]string{
-			"case_017": "cases/case_017",
+		cases: map[string]CaseEntry{
+			"case_017": {
+				ID:    "case_017",
+				Title: "Последний экземпляр",
+				Path:  "cases/case_017",
+			},
+
+			"case_train": {
+				ID:    "case_train",
+				Title: "Ночной экспресс",
+				Path:  "cases/case_train",
+			},
 		},
 	}
 }
 
 func (r *CaseRegistry) GetPath(caseID string) (string, error) {
-	path, ok := r.cases[caseID]
+	entry, ok := r.cases[caseID]
 	if !ok {
 		return "", fmt.Errorf("%w: %s", ErrCaseNotFound, caseID)
 	}
 
-	return path, nil
+	return entry.Path, nil
+}
+
+func (r *CaseRegistry) List() []CaseEntry {
+	result := make([]CaseEntry, 0, len(r.cases))
+
+	for _, entry := range r.cases {
+		result = append(result, entry)
+	}
+
+	return result
 }
