@@ -6,10 +6,10 @@ import (
 )
 
 type Location struct {
-	Name   string
-	About  string
-	Object Object
-	LocID  int
+	Name   string `json:"name"`
+	About  string `json:"about"`
+	Object Object `json:"-"`
+	LocID  int    `json:"loc_id"`
 }
 
 func CreateLocations() []Location {

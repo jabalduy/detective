@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -60,7 +61,7 @@ var games = make(map[string]*GameState)
 var gamesMu sync.Mutex
 var gameMu sync.Mutex
 
-func getGame(w http.ResponseWriter, r *http.Request) *GameState {
+func getGame(w http.ResponseWriter, r *http.Request) (*GameState, error) {
 	sessionID := getSessionID(w, r)
 
 	gamesMu.Lock()
@@ -68,13 +69,16 @@ func getGame(w http.ResponseWriter, r *http.Request) *GameState {
 
 	game, ok := games[sessionID]
 	if ok {
-		return game
+		return game, nil
 	}
 
-	game = newGame()
+	game, err := newGame()
+	if err != nil {
+		return nil, err
+	}
 	games[sessionID] = game
 
-	return game
+	return game, nil
 }
 
 func newSessionID() string {
@@ -88,14 +92,19 @@ func newSessionID() string {
 	return hex.EncodeToString(bytes)
 }
 
-func newGame() *GameState {
-	return &GameState{
-		Suspects:  CreateSuspects(),
-		Clues:     CreateClue(),
-		Locations: CreateLocations(),
-		Objects:   CreateObjects(),
-		Dialogues: CreateDialogue(),
+func newGame() (*GameState, error) {
+	caseDef, err := LoadCase("cases/case_017")
+	if err != nil {
+		return nil, err
 	}
+
+	return &GameState{
+		Suspects:  caseDef.Suspects,
+		Clues:     caseDef.Clues,
+		Locations: caseDef.Locations,
+		Objects:   caseDef.Objects,
+		Dialogues: caseDef.Dialogues,
+	}, nil
 }
 
 func getSessionID(w http.ResponseWriter, r *http.Request) string {
@@ -129,7 +138,13 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := getSessionID(w, r)
-	game := newGame()
+	game, err := newGame()
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gamesMu.Lock()
 	games[sessionID] = game
 	gamesMu.Unlock()
@@ -144,7 +159,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err := json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Не удалось отправить ответ", http.StatusInternalServerError)
 		return
@@ -152,7 +167,13 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func locationsHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -163,7 +184,7 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err := json.NewEncoder(w).Encode(game.Locations)
+	err = json.NewEncoder(w).Encode(game.Locations)
 	if err != nil {
 		http.Error(w, "Не удалось отправить комнаты", http.StatusInternalServerError)
 		return
@@ -171,7 +192,13 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func suspectsHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -182,7 +209,7 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err := json.NewEncoder(w).Encode(game.Suspects)
+	err = json.NewEncoder(w).Encode(game.Suspects)
 	if err != nil {
 		http.Error(w, "Не удалось отправить подозреваемых", http.StatusInternalServerError)
 		return
@@ -190,7 +217,13 @@ func suspectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func objectsHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -225,7 +258,13 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -293,7 +332,13 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -328,7 +373,13 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -383,7 +434,13 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func caseHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 
@@ -421,7 +478,7 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 	response.Intro = CaseIntro()
 	response.KnownInfo = CaseKnownInfo()
 
-	err := json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Не удалось отправить досье", http.StatusInternalServerError)
 		return
@@ -429,7 +486,13 @@ func caseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
-	game := getGame(w, r)
+	game, err := getGame(w, r)
+	if err != nil {
+		log.Printf("new game: %v", err)
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+
 	gameMu.Lock()
 	defer gameMu.Unlock()
 

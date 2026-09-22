@@ -6,16 +6,16 @@ import (
 )
 
 type Dialogue struct {
-	SusID    int
-	DialID   int
-	Question string
-	Answer   string
-	IsClue   bool
-	IsOpen   bool
-	ObjID    int
-	Asked    bool
-	Fact     string
-	Key      bool
+	SusID    int    `json:"sus_id"`
+	DialID   int    `json:"dial_id"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+	IsClue   bool   `json:"is_clue"`
+	IsOpen   bool   `json:"is_open"`
+	ObjID    int    `json:"obj_id"`
+	Asked    bool   `json:"asked"`
+	Fact     string `json:"fact"`
+	Key      bool   `json:"key"`
 }
 
 func ChooseQuestion(game *GameState, choiceSus int, scanner *bufio.Scanner) {

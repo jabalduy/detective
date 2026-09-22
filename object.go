@@ -6,13 +6,13 @@ import (
 )
 
 type Object struct {
-	LocID    int
-	Name     string
-	About    string
-	Searched bool
-	ObjID    int
-	IsClue   bool
-	Key      bool
+	LocID    int    `json:"loc_id"`
+	Name     string `json:"name"`
+	About    string `json:"about"`
+	Searched bool   `json:"searched"`
+	ObjID    int    `json:"obj_id"`
+	IsClue   bool   `json:"is_clue"`
+	Key      bool   `json:"key"`
 }
 
 func CreateObjects() []Object {

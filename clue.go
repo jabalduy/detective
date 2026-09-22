@@ -6,11 +6,11 @@ import (
 )
 
 type Clue struct {
-	Name  string
-	About string
-	Found bool
-	ObjID int
-	Key   bool
+	Name  string `json:"name"`
+	About string `json:"about"`
+	Found bool   `json:"-"`
+	ObjID int    `json:"obj_id"`
+	Key   bool   `json:"key"`
 }
 
 func CreateClue() []Clue {

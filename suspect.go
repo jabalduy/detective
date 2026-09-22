@@ -6,12 +6,11 @@ import (
 )
 
 type Suspect struct {
-	Name   string
-	Age    int
-	About  string
-	Alibi  string
-	SusID  int
-	IsClue bool
+	Name   string `json:"name"`
+	Age    int    `json:"age"`
+	About  string `json:"about"`
+	SusID  int    `json:"sus_id"`
+	IsClue bool   `json:"is_clue"`
 }
 
 func CreateSuspects() []Suspect {
@@ -20,35 +19,30 @@ func CreateSuspects() []Suspect {
 			Name:  "👷🏽‍♂️ Джозеф",
 			Age:   54,
 			About: "Строитель. Последние несколько недель ремонтировал дом Эдварда.",
-			Alibi: "Был на работе",
 			SusID: 1,
 		},
 		{
 			Name:  "👩🏻‍🍳 Моника",
 			Age:   36,
 			About: "Повар Эдварда. В вечер убийства работала в доме.",
-			Alibi: "Была с семьей",
 			SusID: 2,
 		},
 		{
 			Name:  "👨🏼‍🎓 Томас",
 			Age:   19,
 			About: "Студент. Одногруппник внучки Эдварда, Эмили",
-			Alibi: "Был на экзамене",
 			SusID: 3,
 		},
 		{
 			Name:  "👩🏻‍💼 Карен",
 			Age:   49,
 			About: "Бухгалтер Эдварда. Вела его финансовые дела.",
-			Alibi: "Была на выставке",
 			SusID: 4,
 		},
 		{
 			Name:  "👵🏼 Лилиан",
 			Age:   64,
 			About: "Соседка и давняя подруга семьи. Живёт напротив.",
-			Alibi: "Была на рынке",
 			SusID: 5,
 		},
 	}
