@@ -837,6 +837,8 @@
 		const state = {
 			started: false,
 			startData: null,
+			selectedCase: null,
+			availableCases: [],
 			introStep: 0,
 			view: "landing",
 
@@ -926,12 +928,13 @@
 
 		function renderLanding() {
 			setTabsVisible(false);
+			state.view = "landing";
 
 			leftPage.innerHTML = `
 			<div class="intro-layout">
 				<p class="kicker">Архив расследований</p>
-				<h1 class="case-number">Дело №17</h1>
-				<h2 class="case-title">«Последний экземпляр»</h2>
+				<h1 class="case-number">Частные дела</h1>
+				<h2 class="case-title">Архив следователя</h2>
 
 				<div class="landing-mark">
 					частное<br>дело
@@ -946,36 +949,97 @@
 
 			rightPage.innerHTML = `
 			<div class="intro-layout">
-				<p class="kicker">Новая запись</p>
-				<h2 class="section-title">Начать расследование</h2>
+				<p class="kicker">Архив</p>
+				<h2 class="section-title">Выбрать расследование</h2>
 
 				<p class="story">
-					Вечер. Дом Эдварда Вейла.<br>
-					В библиотеке произошло убийство.
-				</p>
-
-				<p class="empty-note">
-					Сначала зафиксируйте всё, что известно о деле.
+					Откройте архив, чтобы выбрать дело.
 				</p>
 
 				<button class="ink-button" id="start-game">
-					Открыть дело →
+					Открыть архив →
 				</button>
 			</div>
 		`;
 
 			document
 				.getElementById("start-game")
-				.addEventListener("click", startGame);
+				.addEventListener("click", openCaseSelection);
 		}
 
+		async function openCaseSelection() {
+			try {
+				state.availableCases = await api("/cases") || [];
+				renderCaseSelection();
+			} catch (error) {
+				showError(error);
+			}
+		}
+
+		function renderCaseSelection() {
+			setTabsVisible(false);
+			state.view = "case-selection";
+
+			leftPage.innerHTML = `
+			<div class="intro-layout">
+				<p class="kicker">Архив расследований</p>
+				<h1 class="case-number">Дела</h1>
+				<h2 class="case-title">Выберите расследование</h2>
+
+				<p class="story compact">
+					Каждое дело хранится отдельно и запускается одним игровым движком.
+				</p>
+
+				<button class="text-button ink-button" id="back-landing">
+					← назад
+				</button>
+			</div>
+		`;
+
+			rightPage.innerHTML = `
+			<div class="page-scroll">
+				<p class="kicker">Доступные дела</p>
+				<h2 class="section-title">Архив</h2>
+
+				<div class="list">
+					${state.availableCases.length
+						? state.availableCases.map(caseInfo => `
+							<button
+								class="list-button"
+								data-case="${escapeHtml(caseInfo.id)}"
+							>
+								${escapeHtml(caseInfo.title)}
+							</button>
+						`).join("")
+						: `
+							<p class="empty-note">
+								В архиве пока нет доступных дел.
+							</p>
+						`
+					}
+				</div>
+			</div>
+		`;
+
+			document
+				.querySelectorAll("[data-case]")
+				.forEach(button => {
+					button.addEventListener("click", () => {
+						startGame(button.dataset.case);
+					});
+				});
+
+			document
+				.getElementById("back-landing")
+				.addEventListener("click", renderLanding);
+		}
 
 		// =========================================================
 		// START GAME
 		// =========================================================
 
-		async function startGame() {
-			const button = document.getElementById("start-game");
+		async function startGame(caseID) {
+			const button = document.querySelector(`[data-case="${CSS.escape(caseID)}"]`);
 
 			try {
 				if (button) {
@@ -983,10 +1047,12 @@
 					button.textContent = "Открываю дело...";
 				}
 
-				state.startData = await api("/start", {
-					method: "POST"
-				});
+				state.startData = await api(
+					"/start?caseID=" + encodeURIComponent(caseID),
+					{ method: "POST" }
+				);
 
+				state.selectedCase = caseID;
 				state.started = true;
 				state.introStep = 0;
 				state.view = "intro";
@@ -1012,11 +1078,11 @@
 
 				if (button) {
 					button.disabled = false;
-					button.textContent = "Открыть дело →";
+					const caseInfo = state.availableCases.find(item => item.id === caseID);
+					button.textContent = caseInfo?.title || caseID;
 				}
 			}
 		}
-
 
 		// =========================================================
 		// INTRO
@@ -1035,10 +1101,15 @@
 				? "Первичная запись"
 				: "Что известно";
 
+			const currentCase = state.availableCases.find(
+				item => item.id === state.selectedCase
+			);
+			const caseTitle = currentCase?.title || state.selectedCase || "Дело";
+
 			leftPage.innerHTML = `
 			<div class="page-scroll">
-				<p class="kicker">Дело №17</p>
-				<h1 class="case-number">Последний экземпляр</h1>
+				<p class="kicker">Текущее расследование</p>
+				<h1 class="case-number">${escapeHtml(caseTitle)}</h1>
 				<h2 class="case-title">${heading}</h2>
 
 				<div class="hand-note">
@@ -1888,11 +1959,15 @@
 					</p>
 
 					<h1 class="case-number">
-						Дело №17
+						${escapeHtml(
+							state.availableCases.find(item => item.id === state.selectedCase)?.title
+							|| state.selectedCase
+							|| "Дело"
+						)}
 					</h1>
 
 					<h2 class="case-title">
-						Последний экземпляр
+						Расследование завершено
 					</h2>
 
 					<div class="ending ${escapeHtml(type)}">
@@ -1923,7 +1998,7 @@
 						class="ink-button"
 						id="restart-game"
 					>
-						Начать новое расследование →
+						Вернуться в архив →
 					</button>
 
 				</div>
@@ -1932,7 +2007,11 @@
 
 				document
 					.getElementById("restart-game")
-					.addEventListener("click", startGame);
+					.addEventListener("click", () => {
+						state.started = false;
+						state.selectedCase = null;
+						renderLanding();
+					});
 
 				return;
 			}
