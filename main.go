@@ -1,5 +1,7 @@
 package main
 
+import "detective/internal/server"
+
 func main() {
-	StartServer()
+	server.StartServer()
 }

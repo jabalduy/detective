@@ -11,9 +11,3 @@ type CaseDefinition struct {
 	Suspects  []game.Suspect  `json:"-"`
 	Dialogues []game.Dialogue `json:"-"`
 }
-
-type Endings struct {
-	Win      string `json:"win"`
-	Unsolved string `json:"unsolved"`
-	Fail     string `json:"fail"`
-}
