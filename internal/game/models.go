@@ -1,5 +1,9 @@
 package game
 
+import (
+	"time"
+)
+
 type Clue struct {
 	Name  string `json:"name"`
 	About string `json:"about"`
@@ -100,4 +104,19 @@ type Effect struct {
 type Action struct {
 	Requirements []Requirement `json:"requirements"`
 	Effects      []Effect      `json:"effects"`
+}
+
+type Clock struct {
+	CurrentTime time.Time
+}
+
+func (c *Clock) BackgroundTime() {
+	ticker := time.NewTicker(1 * time.Second)
+	for range ticker.C {
+		c.CurrentTime = c.CurrentTime.Add(1 * time.Second)
+	}
+}
+
+type StartTime struct {
+	StartTime time.Time
 }

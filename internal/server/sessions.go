@@ -84,7 +84,12 @@ func newGame(caseID string) (*game.GameState, error) {
 		return nil, fmt.Errorf("load case %q: %w", caseID, err)
 	}
 
-	return &game.GameState{
+	// clock := caseDef.StartTime{
+	// 	CurrentTime: gameState.StartTime,
+	// }
+	// go BackgroundTime(game.Clock)
+
+	gameState := &game.GameState{
 		Case: caseDef.CaseInfo,
 
 		Suspects:   caseDef.Suspects,
@@ -104,7 +109,9 @@ func newGame(caseID string) (*game.GameState, error) {
 		FoundMotives:     make(map[int]bool),
 
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
-	}, nil
+	}
+
+	return gameState, nil
 }
 
 func getStartedGame(w http.ResponseWriter, r *http.Request) (*Session, error) {

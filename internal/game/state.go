@@ -11,6 +11,7 @@ type GameState struct {
 	Facts      []Fact
 	Deductions []Deduction
 	Motives    []Motive
+	StartTime  StartTime
 
 	FoundClues       map[int]bool
 	FoundFacts       map[int]bool

@@ -60,6 +60,11 @@ func LoadCase(path string) (*CaseDefinition, error) {
 		return nil, err
 	}
 
+	startTime, err := LoadStartTime(filepath.Join(path, "startTime.json"))
+	if err != nil {
+		return nil, err
+	}
+
 	caseDef.Clues = clues
 	caseDef.Locations = locations
 	caseDef.Objects = objects
@@ -68,6 +73,7 @@ func LoadCase(path string) (*CaseDefinition, error) {
 	caseDef.Facts = facts
 	caseDef.Deductions = deductions
 	caseDef.Motives = motives
+	caseDef.StartTime = startTime
 
 	return &caseDef, nil
 }
@@ -198,4 +204,20 @@ func LoadMotives(path string) ([]game.Motive, error) {
 	}
 
 	return motives, nil
+}
+
+func LoadStartTime(path string) (game.StartTime, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return game.StartTime{}, err
+	}
+
+	var startTime game.StartTime
+
+	err = json.Unmarshal(data, &startTime)
+	if err != nil {
+		return game.StartTime{}, err
+	}
+
+	return startTime, nil
 }
