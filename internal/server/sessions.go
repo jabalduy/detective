@@ -89,6 +89,10 @@ func newGame(caseID string) (*game.GameState, error) {
 	// }
 	// go BackgroundTime(game.Clock)
 
+	// clock := game.Clock{
+	// 	CurrentTime: game.StartTime,
+	// },
+
 	gameState := &game.GameState{
 		Case: caseDef.CaseInfo,
 
@@ -110,6 +114,8 @@ func newGame(caseID string) (*game.GameState, error) {
 
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}
+
+	// go clock.BackgroundTime()
 
 	return gameState, nil
 }
