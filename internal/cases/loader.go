@@ -45,11 +45,23 @@ func LoadCase(path string) (*CaseDefinition, error) {
 		return nil, err
 	}
 
+	facts, err := LoadFacts(filepath.Join(path, "facts.json"))
+	if err != nil {
+		return nil, err
+	}
+
+	deductions, err := LoadDeductions(filepath.Join(path, "deductions.json"))
+	if err != nil {
+		return nil, err
+	}
+
 	caseDef.Clues = clues
 	caseDef.Locations = locations
 	caseDef.Objects = objects
 	caseDef.Suspects = suspects
 	caseDef.Dialogues = dialogues
+	caseDef.Facts = facts
+	caseDef.Deductions = deductions
 
 	return &caseDef, nil
 }
@@ -132,4 +144,36 @@ func LoadDialogues(path string) ([]game.Dialogue, error) {
 	}
 
 	return dialogues, nil
+}
+
+func LoadFacts(path string) ([]game.Fact, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var facts []game.Fact
+
+	err = json.Unmarshal(data, &facts)
+	if err != nil {
+		return nil, err
+	}
+
+	return facts, nil
+}
+
+func LoadDeductions(path string) ([]game.Deduction, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var deductions []game.Deduction
+
+	err = json.Unmarshal(data, &deductions)
+	if err != nil {
+		return nil, err
+	}
+
+	return deductions, nil
 }

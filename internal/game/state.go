@@ -3,16 +3,20 @@ package game
 type GameState struct {
 	Case CaseInfo
 
-	Suspects  []Suspect
-	Clues     []Clue
-	Locations []Location
-	Objects   []Object
-	Dialogues []Dialogue
+	Suspects   []Suspect
+	Clues      []Clue
+	Locations  []Location
+	Objects    []Object
+	Dialogues  []Dialogue
+	Facts      []Fact
+	Deductions []Deduction
 
-	FoundClues      map[int]bool
-	SearchedObjects map[int]bool
-	AskedDialogues  map[DialogueID]bool
-	OpenDialogues   map[DialogueID]bool
+	FoundClues       map[int]bool
+	FoundFacts       map[int]bool
+	SearchedObjects  map[int]bool
+	AskedDialogues   map[DialogueID]bool
+	OpenDialogues    map[DialogueID]bool
+	SolvedDeductions map[int]bool
 }
 
 func InitOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {

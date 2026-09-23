@@ -8,6 +8,9 @@ func requirementMet(state *GameState, req Requirement) bool {
 	case "object_searched":
 		return state.SearchedObjects[req.ID]
 
+	case "fact_found":
+		return state.FoundFacts[req.ID]
+
 	case "dialogue_asked":
 		dialogueID := DialogueID{
 			SusID:  req.SusID,

@@ -87,15 +87,17 @@ func newGame(caseID string) (*game.GameState, error) {
 	return &game.GameState{
 		Case: caseDef.CaseInfo,
 
-		Suspects:  caseDef.Suspects,
-		Clues:     caseDef.Clues,
-		Locations: caseDef.Locations,
-		Objects:   caseDef.Objects,
-		Dialogues: caseDef.Dialogues,
+		Suspects:   caseDef.Suspects,
+		Clues:      caseDef.Clues,
+		Locations:  caseDef.Locations,
+		Objects:    caseDef.Objects,
+		Dialogues:  caseDef.Dialogues,
+		Deductions: caseDef.Deductions,
 
-		FoundClues:      make(map[int]bool),
-		SearchedObjects: make(map[int]bool),
-		AskedDialogues:  make(map[game.DialogueID]bool),
+		FoundClues:       make(map[int]bool),
+		SearchedObjects:  make(map[int]bool),
+		AskedDialogues:   make(map[game.DialogueID]bool),
+		SolvedDeductions: make(map[int]bool),
 
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}, nil

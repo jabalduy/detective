@@ -5,6 +5,9 @@ func applyEffect(state *GameState, effect Effect) {
 	case "discover_clue":
 		state.FoundClues[effect.ID] = true
 
+	case "discover_fact":
+		state.FoundFacts[effect.ID] = true
+
 	case "open_dialogue":
 		id := DialogueID{
 			SusID:  effect.SusID,

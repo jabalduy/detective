@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "sus_id": 1,
+        "dial_id": 1,
+        "question": "Окно в купе было открыто?",
+        "answer": "Нет. Насколько я помню, всю ночь оно оставалось закрытым.",
+        "is_open": true,
+        "is_clue": false,
+        "obj_id": 0,
+        "fact": "",
+        "key": false,
+        "requirements": [],
+        "effects": [
+            {
+                "type": "discover_fact",
+                "id": 1
+            }
+        ]
+    }
+]

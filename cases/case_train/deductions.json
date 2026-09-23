@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "title": "Происхождение воды",
+        "required_facts": [
+            1,
+            2
+        ],
+        "effects": [
+            {
+                "type": "discover_fact",
+                "id": 3
+            }
+        ]
+    }
+]
