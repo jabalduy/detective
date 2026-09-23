@@ -93,11 +93,13 @@ func newGame(caseID string) (*game.GameState, error) {
 		Objects:    caseDef.Objects,
 		Dialogues:  caseDef.Dialogues,
 		Deductions: caseDef.Deductions,
+		Facts:      caseDef.Facts,
 
 		FoundClues:       make(map[int]bool),
 		SearchedObjects:  make(map[int]bool),
 		AskedDialogues:   make(map[game.DialogueID]bool),
 		SolvedDeductions: make(map[int]bool),
+		FoundFacts:       make(map[int]bool),
 
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}, nil
