@@ -22,7 +22,7 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 	state := session.State
 
 	if state == nil {
-		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		http.Error(w, "Игра не запущена", http.StatusConflict)
 		return
 	}
 
@@ -30,8 +30,7 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(state.Locations)
 	if err != nil {
-		http.Error(w, "Не удалось отправить комнаты", http.StatusInternalServerError)
-		return
+		log.Printf("locations: encode response: %v", err)
 	}
 }
 
@@ -49,7 +48,7 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 	state := session.State
 
 	if state == nil {
-		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		http.Error(w, "Игра не запущена", http.StatusConflict)
 		return
 	}
 
@@ -82,12 +81,16 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(objectsResponse)
 	if err != nil {
-		http.Error(w, "Не удалось отправить объекты", http.StatusInternalServerError)
-		return
+		log.Printf("objects: encode response: %v", err)
 	}
 }
 
 func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		return
+	}
+
 	session, err := getGame(w, r)
 	if err != nil {
 		log.Printf("new game: %v", err)
@@ -100,12 +103,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 	state := session.State
 
 	if state == nil {
-		http.Error(w, "Игра не запущена", http.StatusBadRequest)
-		return
-	}
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		http.Error(w, "Игра не запущена", http.StatusConflict)
 		return
 	}
 
@@ -149,7 +147,7 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := json.NewEncoder(w).Encode(response)
 		if err != nil {
-			http.Error(w, "Не удалось отправить объект", http.StatusInternalServerError)
+			log.Printf("inspectObjects: encode response: %v", err)
 		}
 
 		return

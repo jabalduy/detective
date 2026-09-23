@@ -100,3 +100,19 @@ func newGame(caseID string) (*game.GameState, error) {
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}, nil
 }
+
+func getStartedGame(w http.ResponseWriter, r *http.Request) (*Session, error) {
+	session, err := getGame(w, r)
+	if err != nil {
+		return nil, err
+	}
+
+	session.Mu.RLock()
+	defer session.Mu.RUnlock()
+
+	if session.State == nil {
+		return nil, ErrGameNotStarted
+	}
+
+	return session, nil
+}

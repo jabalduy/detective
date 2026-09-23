@@ -81,19 +81,10 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		KnownInfo: state.Case.KnownInfo,
 	}
 
-	response := StartResponse{
-		Status:    "started",
-		Title:     state.Case.Title,
-		Message:   "Расследование начато",
-		Intro:     state.Case.Intro,
-		KnownInfo: state.Case.KnownInfo,
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
-		http.Error(w, "Не удалось отправить ответ", http.StatusInternalServerError)
-		return
+		log.Printf("start game: encode response: %v", err)
 	}
 }
