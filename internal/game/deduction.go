@@ -1,7 +1,5 @@
 package game
 
-import "fmt"
-
 type Deduction struct {
 	ID       int    `json:"id"`
 	Title    string `json:"title"`
@@ -12,17 +10,10 @@ type Deduction struct {
 
 func CanSolveDeduction(state *GameState, deduction Deduction) bool {
 	if state.SolvedDeductions[deduction.ID] {
-		fmt.Println("deduction already solved:", deduction.ID)
 		return false
 	}
 
 	for _, factID := range deduction.Required {
-		fmt.Printf(
-			"fact %d found: %v\n",
-			factID,
-			state.FoundFacts[factID],
-		)
-
 		if !state.FoundFacts[factID] {
 			return false
 		}

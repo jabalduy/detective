@@ -12,4 +12,5 @@ type CaseDefinition struct {
 	Dialogues  []game.Dialogue  `json:"-"`
 	Facts      []game.Fact      `json:"-"`
 	Deductions []game.Deduction `json:"-"`
+	Motives    []game.Motive    `json:"-"`
 }

@@ -19,6 +19,8 @@ func StartServer() {
 	http.HandleFunc("/accuse", accuseHandler)
 	http.HandleFunc("/cases", casesHandler)
 	http.HandleFunc("/deduce", deductionHandler)
+	http.HandleFunc("/facts", factsHandler)
+	http.HandleFunc("/motives", motivesHandler)
 
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))

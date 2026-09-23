@@ -10,6 +10,7 @@ type GameState struct {
 	Dialogues  []Dialogue
 	Facts      []Fact
 	Deductions []Deduction
+	Motives    []Motive
 
 	FoundClues       map[int]bool
 	FoundFacts       map[int]bool
@@ -17,6 +18,7 @@ type GameState struct {
 	AskedDialogues   map[DialogueID]bool
 	OpenDialogues    map[DialogueID]bool
 	SolvedDeductions map[int]bool
+	FoundMotives     map[int]bool
 }
 
 func InitOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {

@@ -16,5 +16,28 @@
                 "id": 1
             }
         ]
+    },
+    {
+        "sus_id": 1,
+        "dial_id": 2,
+        "question": "Если окно было закрыто, откуда внутри могла взяться вода?",
+        "answer": "Странно... Снаружи она попасть не могла. Возможно, кто-то принёс в купе лёд или что-то мокрое.",
+        "is_open": false,
+        "is_clue": false,
+        "obj_id": 0,
+        "fact": "",
+        "key": false,
+        "requirements": [
+            {
+                "type": "fact_found",
+                "id": 3
+            }
+        ],
+        "effects": [
+            {
+                "type": "discover_fact",
+                "id": 4
+            }
+        ]
     }
 ]

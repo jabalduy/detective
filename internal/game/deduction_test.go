@@ -105,3 +105,42 @@ func TestSolveDeductionDiscoversFact(t *testing.T) {
 		t.Error("expected fact 3 to be discovered")
 	}
 }
+
+func TestSolveDeductionDiscoversMotive(t *testing.T) {
+	state := &GameState{
+		FoundFacts: map[int]bool{
+			1: true,
+			2: true,
+		},
+		FoundMotives:     make(map[int]bool),
+		SolvedDeductions: make(map[int]bool),
+		OpenDialogues:    make(map[DialogueID]bool),
+	}
+
+	deduction := Deduction{
+		ID:       1,
+		Required: []int{1, 2},
+		Action: Action{
+			Effects: []Effect{
+				{
+					Type: "discover_motive",
+					ID:   10,
+				},
+			},
+		},
+	}
+
+	success := SolveDeduction(state, deduction)
+
+	if !success {
+		t.Fatal("expected deduction to be solved")
+	}
+
+	if !state.FoundMotives[10] {
+		t.Fatal("expected motive 10 to be discovered")
+	}
+
+	if !state.SolvedDeductions[1] {
+		t.Fatal("expected deduction 1 to be marked as solved")
+	}
+}
