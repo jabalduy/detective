@@ -93,6 +93,8 @@ func newGame(caseID string) (*game.GameState, error) {
 	// 	CurrentTime: game.StartTime,
 	// },
 
+	clock := game.NewClock(caseDef.StartTime.StartTime)
+
 	gameState := &game.GameState{
 		Case: caseDef.CaseInfo,
 
@@ -105,6 +107,7 @@ func newGame(caseID string) (*game.GameState, error) {
 		Facts:      caseDef.Facts,
 		Motives:    caseDef.Motives,
 
+		Clock:            clock,
 		FoundClues:       make(map[int]bool),
 		SearchedObjects:  make(map[int]bool),
 		AskedDialogues:   make(map[game.DialogueID]bool),
@@ -115,7 +118,7 @@ func newGame(caseID string) (*game.GameState, error) {
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
 	}
 
-	// go clock.BackgroundTime()
+	go clock.RunTime()
 
 	return gameState, nil
 }

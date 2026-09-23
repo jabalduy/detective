@@ -1,22 +1,59 @@
 package game
 
 import (
+	"context"
 	"sync"
 	"time"
 )
 
 type Clock struct {
-	CurrentTime time.Time
-	Mu          sync.RWMutex
+	currentTime time.Time
+	mu          sync.RWMutex
+	ctx         context.Context
+	cancel      context.CancelFunc
 }
 
-func (c *Clock) BackgroundTime() {
+func (c *Clock) RunTime() {
 	ticker := time.NewTicker(1 * time.Second)
-	for range ticker.C {
-		c.CurrentTime = c.CurrentTime.Add(1 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			c.mu.Lock()
+			c.currentTime = c.currentTime.Add(1 * time.Second)
+			c.mu.Unlock()
+
+		case <-c.ctx.Done():
+			return
+		}
 	}
+}
+
+func NewClock(startTime time.Time) *Clock {
+	TimeContext, TimeCancel := context.WithCancel(context.Background())
+
+	clock := Clock{
+		currentTime: startTime,
+		mu:          sync.RWMutex{},
+		ctx:         TimeContext,
+		cancel:      TimeCancel,
+	}
+
+	return &clock
 }
 
 type StartTime struct {
 	StartTime time.Time
+}
+
+func (c *Clock) GetTime() time.Time {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	return c.currentTime
+}
+
+func (c *Clock) StopTime() {
+	c.cancel()
 }
