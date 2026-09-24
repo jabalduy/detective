@@ -11,6 +11,7 @@ type Clock struct {
 	mu          sync.RWMutex
 	ctx         context.Context
 	cancel      context.CancelFunc
+	isPaused    bool
 }
 
 func (c *Clock) RunTime() {
@@ -19,13 +20,18 @@ func (c *Clock) RunTime() {
 
 	for {
 		select {
-		case <-ticker.C:
-			c.mu.Lock()
-			c.currentTime = c.currentTime.Add(1 * time.Second)
-			c.mu.Unlock()
-
 		case <-c.ctx.Done():
 			return
+
+		case <-ticker.C:
+			c.mu.Lock()
+
+			if c.isPaused {
+				c.mu.Unlock()
+				continue
+			}
+			c.currentTime = c.currentTime.Add(1 * time.Second)
+			c.mu.Unlock()
 		}
 	}
 }
@@ -56,4 +62,25 @@ func (c *Clock) GetTime() time.Time {
 
 func (c *Clock) StopTime() {
 	c.cancel()
+}
+
+func (c *Clock) Pause() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.isPaused = true
+}
+
+func (c *Clock) Resume() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.isPaused = false
+}
+
+func (c *Clock) Add(duration time.Duration) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.currentTime = c.currentTime.Add(duration)
 }
