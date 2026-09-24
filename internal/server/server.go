@@ -21,6 +21,7 @@ func StartServer() {
 	http.HandleFunc("/deduce", deductionHandler)
 	http.HandleFunc("/facts", factsHandler)
 	http.HandleFunc("/motives", motivesHandler)
+	http.HandleFunc("/dialogue/start", startDialogueHandler)
 
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))

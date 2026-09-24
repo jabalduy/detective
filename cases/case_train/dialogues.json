@@ -15,7 +15,8 @@
                 "type": "discover_fact",
                 "id": 1
             }
-        ]
+        ],
+        "time_cost": 30
     },
     {
         "sus_id": 1,
