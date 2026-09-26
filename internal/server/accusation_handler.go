@@ -1,12 +1,17 @@
 package server
 
 import (
-	"detective/internal/game"
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
+	"slices"
 )
+
+type AccusationRequest struct {
+	SuspectID int   `json:"suspect_id"`
+	MotiveID  int   `json:"motive_id"`
+	FactIDs   []int `json:"fact_ids"`
+}
 
 // ОБВИНЕНИЕ
 func accuseHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,30 +36,91 @@ func accuseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	susIDstr := r.URL.Query().Get("susID")
-
-	susID, err := strconv.Atoi(susIDstr)
+	var accusationRequest AccusationRequest
+	err = json.NewDecoder(r.Body).Decode(&accusationRequest)
 	if err != nil {
-		http.Error(w, "Некорректный susID", http.StatusBadRequest)
+		http.Error(
+			w,
+			"Не удалось прочитать accusationRequest",
+			http.StatusBadRequest,
+		)
 		return
 	}
 
-	keys := game.KeyClues(state) +
-		game.KeyDial(state) +
-		game.KeyObj(state)
-
-	response := AccuseResponse{}
-	if keys == 7 && susID == 4 {
-		response.TypeEnd = "win"
-		response.TextEnd = state.Case.Endings.Win
-	} else if keys > 3 && susID == 4 {
-		response.TypeEnd = "unsolved"
-		response.TextEnd = state.Case.Endings.Unsolved
-	} else {
-		response.TypeEnd = "fail"
-		response.TextEnd = state.Case.Endings.Fail
+	if !state.FoundMotives[accusationRequest.MotiveID] {
+		http.Error(
+			w,
+			"Отправленный мотив еще не был найден",
+			http.StatusBadRequest,
+		)
+		return
 	}
 
+	for _, factID := range accusationRequest.FactIDs {
+		if !state.FoundFacts[factID] {
+			http.Error(
+				w,
+				"Один из отправленных фактов еще не был найден",
+				http.StatusBadRequest,
+			)
+			return
+		}
+	}
+
+	foundMotive := false
+	for _, motive := range state.Motives {
+		if motive.ID == accusationRequest.MotiveID {
+			foundMotive = true
+
+			if motive.SuspectID != accusationRequest.SuspectID {
+				http.Error(
+					w,
+					"Мотив принадлежит другому персонажу",
+					http.StatusBadRequest,
+				)
+				return
+			}
+
+			break
+		}
+	}
+
+	if !foundMotive {
+		http.Error(
+			w,
+			"Мотив не найден",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	solution := state.Case.Solution
+
+	allFactsCorrect := true
+	for _, rightFact := range solution.FactIDs {
+		if !slices.Contains(accusationRequest.FactIDs, rightFact) {
+			allFactsCorrect = false
+			break
+		}
+	}
+
+	response := AccuseResponse{}
+	switch {
+	case accusationRequest.SuspectID != solution.SuspectID:
+		response.TypeEnd = "fail"
+		response.TextEnd = state.Case.Endings.Fail
+	case accusationRequest.MotiveID != solution.MotiveID:
+		response.TypeEnd = "unsolved"
+		response.TextEnd = state.Case.Endings.Unsolved
+	case !allFactsCorrect:
+		response.TypeEnd = "unsolved"
+		response.TextEnd = state.Case.Endings.Unsolved
+	default:
+		response.TypeEnd = "win"
+		response.TextEnd = state.Case.Endings.Win
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Не удалось отправить обвинение", http.StatusInternalServerError)

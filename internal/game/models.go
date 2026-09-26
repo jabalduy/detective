@@ -76,11 +76,18 @@ type Endings struct {
 }
 
 type CaseInfo struct {
-	ID        string  `json:"id"`
-	Title     string  `json:"title"`
-	Intro     string  `json:"intro"`
-	KnownInfo string  `json:"known_info"`
-	Endings   Endings `json:"endings"`
+	ID        string   `json:"id"`
+	Title     string   `json:"title"`
+	Intro     string   `json:"intro"`
+	KnownInfo string   `json:"known_info"`
+	Endings   Endings  `json:"endings"`
+	Solution  Solution `json:"solution"`
+}
+
+type Solution struct {
+	SuspectID int   `json:"suspect_id"`
+	MotiveID  int   `json:"motive_id"`
+	FactIDs   []int `json:"fact_ids"`
 }
 
 type Requirement struct {
