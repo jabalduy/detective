@@ -13,6 +13,8 @@ type GameState struct {
 	Motives    []Motive
 	Clock      *Clock
 
+	ActiveDialogue *DialogueID
+
 	FoundClues       map[int]bool
 	FoundFacts       map[int]bool
 	SearchedObjects  map[int]bool

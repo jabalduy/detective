@@ -49,11 +49,10 @@ type Dialogue struct {
 
 	InitiallyOpen bool `json:"is_open"`
 
-	IsClue   bool   `json:"is_clue"`
-	ObjID    int    `json:"obj_id"`
-	Fact     string `json:"fact"`
-	Key      bool   `json:"key"`
-	TimeCost int    `json:"time_cost"`
+	IsClue bool   `json:"is_clue"`
+	ObjID  int    `json:"obj_id"`
+	Fact   string `json:"fact"`
+	Key    bool   `json:"key"`
 
 	Action
 }
@@ -101,4 +100,5 @@ type Effect struct {
 type Action struct {
 	Requirements []Requirement `json:"requirements"`
 	Effects      []Effect      `json:"effects"`
+	TimeCost     int           `json:"time_cost"`
 }
