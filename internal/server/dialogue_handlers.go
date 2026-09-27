@@ -129,8 +129,10 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			state.AskedDialogues[dialogue.ID()] = true
-			game.PerformAction(state, dialogue.Action)
+			if !state.AskedDialogues[dialogue.ID()] {
+				state.AskedDialogues[dialogue.ID()] = true
+				game.PerformAction(state, dialogue.Action)
+			}
 
 			response = state.Dialogues[i]
 			response.Asked = true
