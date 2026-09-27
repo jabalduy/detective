@@ -1328,6 +1328,7 @@
 				);
 
 				renderRooms();
+				await checkActiveEvent();
 
 			} catch (error) {
 				showError(error);
@@ -1339,15 +1340,7 @@
 			try {
 				const data = await api(
 					`/inspect-object?objID=${objID}`,
-					{
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							suspect_id: state.accuseSuspectID,
-							motive_id: state.accuseMotiveID,
-							fact_ids: state.accuseFactIDs
-						})
-					}
+					{ method: "POST" }
 				);
 
 				state.inspection = data;
