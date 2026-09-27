@@ -26,6 +26,12 @@ func NewCaseRegistry() *CaseRegistry {
 				Path:  "cases/case_017",
 			},
 
+			"case_dinner": {
+				ID:    "case_dinner",
+				Title: "Ужин на шестерых",
+				Path:  "cases/case_dinner",
+			},
+
 			"case_train": {
 				ID:    "case_train",
 				Title: "Ночной экспресс",
