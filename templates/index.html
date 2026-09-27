@@ -1475,7 +1475,7 @@
 					}"
 								data-object="${object.obj_id}"
 							>
-								${escapeHtml(object.name)}
+								${objectEmoji(object.obj_id)} ${escapeHtml(object.name)}
 							</button>
 						`).join("")}
 
@@ -1549,7 +1549,7 @@
 			<div class="object-description">
 
 				<strong>
-					${escapeHtml(objectName)}
+					${objectEmoji(data.object?.obj_id)} ${escapeHtml(objectName)}
 				</strong>
 
 				<br>
@@ -1704,7 +1704,7 @@
 										class="suspect-button"
 										data-suspect="${item.sus_id}"
 									>
-										${escapeHtml(item.name)}
+										${suspectEmoji(item.sus_id)} ${escapeHtml(item.name)}
 									</button>
 								`).join("")}
 
@@ -1912,6 +1912,14 @@
 		}
 
 
+		function suspectEmoji(susID) {
+			return ({ 1: "👩", 2: "💼", 3: "🧔", 4: "👩‍⚕️", 5: "📰", 6: "🗝️" })[susID] || "👤";
+		}
+
+		function objectEmoji(objID) {
+			return ({ 1: "⚰️", 2: "🧪", 3: "🍽️", 5: "💊", 6: "🧰", 7: "📜", 8: "💼", 9: "🎙️", 10: "📝" })[objID] || "🔎";
+		}
+
 		function suspectNameByID(susID) {
 			return (
 				state.suspects.find(item => item.sus_id === susID)?.name ||
@@ -1934,7 +1942,7 @@
 					];
 					alert(opened.length ? `Новый вывод:\n${opened.join("\n")}` : (data.message || "Новый вывод получен"));
 				} else {
-					alert(data?.message || "Эти факты не приводят к новому выводу");
+					alert("ОШИБКА! Факты ни к чему не ведут");
 				}
 				renderCase();
 			} catch (error) { showError(error); }
@@ -2261,7 +2269,7 @@
 				}"
 							data-accuse="${item.sus_id}"
 						>
-							${escapeHtml(item.name)}
+							${suspectEmoji(item.sus_id)} ${escapeHtml(item.name)}
 						</button>
 					`).join("")}
 
@@ -2281,7 +2289,7 @@
 							</p>
 
 							<h2 class="section-title">
-								${escapeHtml(suspect.name)}
+								${suspectEmoji(suspect.sus_id)} ${escapeHtml(suspect.name)}
 							</h2>
 
 							<p class="suspect-meta">
