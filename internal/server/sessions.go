@@ -106,6 +106,7 @@ func newGame(caseID string) (*game.GameState, error) {
 		Deductions: caseDef.Deductions,
 		Facts:      caseDef.Facts,
 		Motives:    caseDef.Motives,
+		Events:     caseDef.Events,
 
 		Clock:               clock,
 		FoundClues:          make(map[int]bool),

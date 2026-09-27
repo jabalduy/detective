@@ -13,5 +13,6 @@ type CaseDefinition struct {
 	Facts      []game.Fact      `json:"-"`
 	Deductions []game.Deduction `json:"-"`
 	Motives    []game.Motive    `json:"-"`
+	Events     []game.Event     `json:"-"`
 	StartTime  game.StartTime   `json:"-"`
 }

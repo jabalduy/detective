@@ -3,15 +3,17 @@ package game
 type GameState struct {
 	Case CaseInfo
 
-	Suspects   []Suspect
-	Clues      []Clue
-	Locations  []Location
-	Objects    []Object
-	Dialogues  []Dialogue
-	Facts      []Fact
-	Deductions []Deduction
-	Motives    []Motive
-	Clock      *Clock
+	Suspects    []Suspect
+	Clues       []Clue
+	Locations   []Location
+	Objects     []Object
+	Dialogues   []Dialogue
+	Facts       []Fact
+	Deductions  []Deduction
+	Motives     []Motive
+	Events      []Event
+	Clock       *Clock
+	ActiveEvent *int
 
 	ActiveDialogue *DialogueID
 

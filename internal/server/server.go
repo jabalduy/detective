@@ -22,6 +22,8 @@ func StartServer() {
 	http.HandleFunc("/facts", factsHandler)
 	http.HandleFunc("/motives", motivesHandler)
 	http.HandleFunc("/dialogue/start", startDialogueHandler)
+	http.HandleFunc("/event", eventHandler)
+	http.HandleFunc("/event/choose", chooseOptionHandler)
 
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))

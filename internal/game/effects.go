@@ -17,6 +17,9 @@ func applyEffect(state *GameState, effect Effect) {
 	case "open_object":
 		state.OpenObjects[effect.ID] = true
 
+	case "trigger_event":
+		TriggerEvent(state, effect.ID)
+
 	case "open_dialogue":
 		id := DialogueID{
 			SusID:  effect.SusID,
