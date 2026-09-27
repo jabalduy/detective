@@ -913,6 +913,30 @@
 				margin-bottom: 16px
 			}
 		}
+		.deduction-overlay {
+			position: fixed; inset: 0; z-index: 120;
+			display: flex; align-items: center; justify-content: center;
+			padding: 24px; background: rgba(24, 18, 12, .42);
+			backdrop-filter: blur(2px);
+		}
+		.deduction-overlay.hidden { display: none; }
+		.deduction-card {
+			position: relative; width: min(520px, 92vw);
+			padding: 34px 38px 30px;
+			background: #f3ead4;
+			border: 1px solid rgba(71, 48, 28, .35);
+			border-radius: 8px;
+			box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
+			text-align: center;
+		}
+		.deduction-card h2 { margin: 0 30px 14px; }
+		.deduction-card p { margin: 0; line-height: 1.55; white-space: pre-line; }
+		.deduction-close {
+			position: absolute; top: 10px; right: 12px;
+			border: 0; background: transparent; cursor: pointer;
+			font-size: 28px; line-height: 1; color: inherit;
+		}
+
 	</style>
 </head>
 
@@ -947,6 +971,14 @@
 		</section>
 	</div>
 
+	<div class="deduction-overlay hidden" id="deduction-overlay" role="dialog" aria-modal="true" aria-labelledby="deduction-popup-title">
+		<section class="deduction-card">
+			<button class="deduction-close" id="deduction-close" type="button" aria-label="Закрыть">×</button>
+			<h2 id="deduction-popup-title"></h2>
+			<p id="deduction-popup-text"></p>
+		</section>
+	</div>
+
 	<script>
 		const leftPage = document.getElementById("left-page");
 		const rightPage = document.getElementById("right-page");
@@ -958,6 +990,10 @@
 		const eventTimer = document.getElementById("event-timer");
 		const eventOptions = document.getElementById("event-options");
 		const eventExpired = document.getElementById("event-expired");
+		const deductionOverlay = document.getElementById("deduction-overlay");
+		const deductionPopupTitle = document.getElementById("deduction-popup-title");
+		const deductionPopupText = document.getElementById("deduction-popup-text");
+		const deductionClose = document.getElementById("deduction-close");
 		let eventTimerID = null;
 
 		const state = {
@@ -1022,6 +1058,18 @@
 				3200
 			);
 		}
+
+		function showDeductionPopup(title, text) {
+			deductionPopupTitle.textContent = title;
+			deductionPopupText.textContent = text;
+			deductionOverlay.classList.remove("hidden");
+		}
+
+		function closeDeductionPopup() {
+			deductionOverlay.classList.add("hidden");
+		}
+
+		deductionClose.addEventListener("click", closeDeductionPopup);
 
 		async function api(path, options = {}) {
 			const response = await fetch(path, options);
@@ -1943,9 +1991,9 @@
 						...(data.new_facts || []).map(item => item.title),
 						...(data.new_motives || []).map(item => `Мотив: ${item.title}`)
 					];
-					alert(opened.length ? `Новый вывод:\n${opened.join("\n")}` : (data.message || "Новый вывод получен"));
+					showDeductionPopup("НОВЫЙ ВЫВОД!", opened.length ? opened.join("\n") : (data.message || "Новый вывод получен"));
 				} else {
-					state.deductionMessage = "ОШИБКА! Факты ни к чему не ведут";
+					showDeductionPopup("ОШИБКА!", "Факты ни к чему не ведут");
 				}
 				renderCase();
 			} catch (error) { showError(error); }
@@ -2080,7 +2128,6 @@
 					<div class="list">
 						${state.facts.map(fact => `<label class="hand-note" style="margin:8px 0;display:block"><input type="checkbox" data-fact-select value="${fact.id}"> <strong>${escapeHtml(fact.title)}</strong><br><span>${escapeHtml(fact.about || "")}</span></label>`).join("")}
 					</div>
-					${state.deductionMessage ? `<div class="hand-note"><strong>${escapeHtml(state.deductionMessage)}</strong></div>` : ""}
 					<button class="ink-button" id="deduce-button">Связать выбранные факты →</button>
 				` : `<p class="empty-note">Факты для дедукции пока не собраны.</p>`}
 
