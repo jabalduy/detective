@@ -64,7 +64,10 @@ func dialoguesHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := range state.Dialogues {
 		if state.Dialogues[i].SusID == susID && state.OpenDialogues[state.Dialogues[i].ID()] {
-			dialogues = append(dialogues, state.Dialogues[i])
+			dialogue := state.Dialogues[i]
+			dialogue.Asked = state.AskedDialogues[dialogue.ID()]
+			dialogue.Confronted = state.ConfrontedDialogues[dialogue.ID()]
+			dialogues = append(dialogues, dialogue)
 		}
 	}
 
@@ -130,6 +133,8 @@ func askDialogueHandler(w http.ResponseWriter, r *http.Request) {
 			game.PerformAction(state, dialogue.Action)
 
 			response = state.Dialogues[i]
+			response.Asked = true
+			response.Confronted = state.ConfrontedDialogues[dialogue.ID()]
 			found = true
 		}
 	}
