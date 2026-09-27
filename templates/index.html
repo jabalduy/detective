@@ -1677,7 +1677,7 @@
 		function renderTalks() {
 
 			const suspect = state.selectedSuspectID
-				? state.suspects[state.selectedSuspectID - 1]
+				? state.suspects.find(item => item.sus_id === state.selectedSuspectID)
 				: null;
 
 
@@ -1699,10 +1699,10 @@
 					? `
 							<div class="list">
 
-								${state.suspects.map((item, index) => `
+								${state.suspects.map(item => `
 									<button
 										class="suspect-button"
-										data-suspect="${index + 1}"
+										data-suspect="${item.sus_id}"
 									>
 										${escapeHtml(item.name)}
 									</button>
@@ -2227,7 +2227,7 @@
 
 			const suspect =
 				state.accuseSuspectID
-					? state.suspects[state.accuseSuspectID - 1]
+					? state.suspects.find(item => item.sus_id === state.accuseSuspectID)
 					: null;
 
 
@@ -2253,13 +2253,13 @@
 
 				<div class="list accuse-list">
 
-					${state.suspects.map((item, index) => `
+					${state.suspects.map(item => `
 						<button
-							class="suspect-button ${state.accuseSuspectID === index + 1
+							class="suspect-button ${state.accuseSuspectID === item.sus_id
 					? "selected"
 					: ""
 				}"
-							data-accuse="${index + 1}"
+							data-accuse="${item.sus_id}"
 						>
 							${escapeHtml(item.name)}
 						</button>
