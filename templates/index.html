@@ -1302,7 +1302,7 @@
 
 		async function openRooms() {
 			try {
-				await ensureLocations();
+				state.locations = await api("/locations");
 
 				state.view = "rooms";
 
@@ -1353,7 +1353,9 @@
 					object.searched = true;
 				}
 
+				state.locations = await api("/locations");
 				renderRooms();
+				await checkActiveEvent();
 
 			} catch (error) {
 				showError(error);
