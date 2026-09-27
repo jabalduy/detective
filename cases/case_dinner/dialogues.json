@@ -281,7 +281,12 @@
         "id": 8
       }
     ],
-    "effects": [],
+    "effects": [
+      {
+        "type": "discover_fact",
+        "id": 7
+      }
+    ],
     "time_cost": 0,
     "sus_id": 2,
     "dial_id": 2,
@@ -354,6 +359,10 @@
       }
     ],
     "effects": [
+      {
+        "type": "discover_fact",
+        "id": 10
+      },
       {
         "type": "trigger_event",
         "id": 1
