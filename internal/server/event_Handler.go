@@ -151,3 +151,23 @@ func chooseOptionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func expireEventHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Некорректная команда", http.StatusMethodNotAllowed)
+		return
+	}
+	session, err := getGame(w, r)
+	if err != nil {
+		http.Error(w, "Не удалось загрузить игру", http.StatusInternalServerError)
+		return
+	}
+	session.Mu.Lock()
+	defer session.Mu.Unlock()
+	if session.State == nil {
+		http.Error(w, "Игра не запущена", http.StatusBadRequest)
+		return
+	}
+	session.State.ActiveEvent = nil
+	w.WriteHeader(http.StatusNoContent)
+}
