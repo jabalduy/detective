@@ -1920,7 +1920,15 @@
 				const data = await api("/deduce", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fact_ids: selected }) });
 				state.facts = await api("/facts") || [];
 				state.motives = await api("/motives") || [];
-				showError(new Error(data?.message || "Связь установлена — появился новый факт"));
+				if (data?.success) {
+					const opened = [
+						...(data.new_facts || []).map(item => item.title),
+						...(data.new_motives || []).map(item => `Мотив: ${item.title}`)
+					];
+					alert(opened.length ? `Новый вывод:\n${opened.join("\n")}` : (data.message || "Новый вывод получен"));
+				} else {
+					alert(data?.message || "Эти факты не приводят к новому выводу");
+				}
 				renderCase();
 			} catch (error) { showError(error); }
 		}
