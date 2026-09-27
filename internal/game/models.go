@@ -57,6 +57,8 @@ type Dialogue struct {
 	ObjID  int    `json:"obj_id"`
 	Fact   string `json:"fact"`
 	Key    bool   `json:"key"`
+	Asked  bool   `json:"asked,omitempty"`
+	Confronted bool `json:"confronted,omitempty"`
 
 	Confrontation *Confrontation `json:"confrontation,omitempty"`
 
