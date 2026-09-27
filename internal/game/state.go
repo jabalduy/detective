@@ -63,7 +63,7 @@ func InitOpenObjects(objects []Object) map[int]bool {
 
 	for _, object := range objects {
 		if object.InitiallyOpen {
-			openObjects[object.LocID] = true
+			openObjects[object.ObjID] = true
 		}
 	}
 
