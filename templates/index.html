@@ -1194,12 +1194,20 @@
 
 				state.inspection = null;
 				state.caseData = null;
+				state.facts = [];
+				state.motives = [];
 				state.ending = null;
 
 				state.selectedLocationID = null;
 				state.selectedSuspectID = null;
 				state.selectedDialogue = null;
 				state.accuseSuspectID = null;
+				state.accuseMotiveID = null;
+				state.accuseFactIDs = [];
+
+				clearInterval(eventTimerID);
+				eventTimerID = null;
+				eventOverlay.classList.add("hidden");
 
 				renderIntro();
 
