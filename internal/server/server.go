@@ -25,6 +25,7 @@ func StartServer() {
 	http.HandleFunc("/confront", confrontationHandler)
 	http.HandleFunc("/event", eventHandler)
 	http.HandleFunc("/event/choose", chooseOptionHandler)
+	http.HandleFunc("/event/expire", expireEventHandler)
 
 	fileServer := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
