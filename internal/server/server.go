@@ -22,6 +22,7 @@ func StartServer() {
 	http.HandleFunc("/facts", factsHandler)
 	http.HandleFunc("/motives", motivesHandler)
 	http.HandleFunc("/dialogue/start", startDialogueHandler)
+	http.HandleFunc("/confront", confrontationHandler)
 	http.HandleFunc("/event", eventHandler)
 	http.HandleFunc("/event/choose", chooseOptionHandler)
 
