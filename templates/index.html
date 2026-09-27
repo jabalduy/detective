@@ -1616,6 +1616,18 @@
 		}
 
 
+		async function confrontDialogue() {
+			try {
+				const dialogue = state.selectedDialogue;
+				if (!dialogue) return;
+				const data = await api(`/confront?susID=${state.selectedSuspectID}&dialID=${dialogue.dial_id}`, { method: "POST" });
+				dialogue.confrontation_result = data.answer || "Противоречие предъявлено.";
+				dialogue.confronted = true;
+				renderTalks();
+				await checkActiveEvent();
+			} catch (error) { showError(error); }
+		}
+
 		async function askDialogue(dialID) {
 			try {
 
