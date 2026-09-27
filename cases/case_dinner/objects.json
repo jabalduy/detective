@@ -174,5 +174,23 @@
         }
       ]
     }
+  },
+  {
+    "obj_id": 10,
+    "loc_id": 5,
+    "name": "Записи Павла о меню",
+    "about": "Пометка подтверждает, что необычный ингредиент был добавлен по прямой просьбе Воронцова.",
+    "key": false,
+    "is_open": true,
+    "inspect_action": {
+      "requirements": [],
+      "effects": [
+        {
+          "type": "discover_fact",
+          "id": 15
+        }
+      ],
+      "time_cost": 0
+    }
   }
 ]
