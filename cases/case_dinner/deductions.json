@@ -58,6 +58,10 @@
       {
         "type": "discover_fact",
         "id": 21
+      },
+      {
+        "type": "discover_motive",
+        "id": 3
       }
     ]
   },
@@ -144,6 +148,10 @@
       {
         "type": "discover_fact",
         "id": 29
+      },
+      {
+        "type": "discover_motive",
+        "id": 4
       }
     ]
   },
