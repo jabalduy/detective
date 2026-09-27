@@ -986,6 +986,7 @@
 			accuseSuspectID: null,
 			accuseMotiveID: null,
 			accuseFactIDs: [],
+			deductionMessage: "",
 			ending: null
 		};
 
@@ -1204,6 +1205,7 @@
 				state.accuseSuspectID = null;
 				state.accuseMotiveID = null;
 				state.accuseFactIDs = [];
+				state.deductionMessage = "";
 
 				clearInterval(eventTimerID);
 				eventTimerID = null;
@@ -1913,7 +1915,7 @@
 
 
 		function suspectEmoji(susID) {
-			return ({ 1: "👩", 2: "💼", 3: "🧔", 4: "👩‍⚕️", 5: "📰", 6: "🗝️" })[susID] || "👤";
+			return ({ 1: "👩", 2: "👨‍💼", 3: "🧔", 4: "👩‍⚕️", 5: "👩‍💼", 6: "👨‍🔧" })[susID] || "👤";
 		}
 
 		function objectEmoji(objID) {
@@ -1929,6 +1931,7 @@
 
 
 		async function tryDeduction() {
+			state.deductionMessage = "";
 			const selected = [...document.querySelectorAll("[data-fact-select]:checked")].map(item => Number(item.value));
 			if (selected.length < 2) { showError(new Error("Выберите минимум два факта")); return; }
 			try {
@@ -1942,7 +1945,7 @@
 					];
 					alert(opened.length ? `Новый вывод:\n${opened.join("\n")}` : (data.message || "Новый вывод получен"));
 				} else {
-					alert("ОШИБКА! Факты ни к чему не ведут");
+					state.deductionMessage = "ОШИБКА! Факты ни к чему не ведут";
 				}
 				renderCase();
 			} catch (error) { showError(error); }
@@ -2077,6 +2080,7 @@
 					<div class="list">
 						${state.facts.map(fact => `<label class="hand-note" style="margin:8px 0;display:block"><input type="checkbox" data-fact-select value="${fact.id}"> <strong>${escapeHtml(fact.title)}</strong><br><span>${escapeHtml(fact.about || "")}</span></label>`).join("")}
 					</div>
+					${state.deductionMessage ? `<div class="hand-note"><strong>${escapeHtml(state.deductionMessage)}</strong></div>` : ""}
 					<button class="ink-button" id="deduce-button">Связать выбранные факты →</button>
 				` : `<p class="empty-note">Факты для дедукции пока не собраны.</p>`}
 
