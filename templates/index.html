@@ -981,6 +981,8 @@
 			selectedDialogue: null,
 
 			caseData: null,
+			facts: [],
+			motives: [],
 			accuseSuspectID: null,
 			ending: null
 		};
@@ -1838,6 +1840,8 @@
 				await ensureSuspects();
 
 				state.caseData = await api("/case");
+				state.facts = await api("/facts") || [];
+				state.motives = await api("/motives") || [];
 				state.view = "case";
 
 				setTabsVisible(true);
@@ -1888,6 +1892,18 @@
 			);
 		}
 
+
+		async function tryDeduction() {
+			const selected = [...document.querySelectorAll("[data-fact-select]:checked")].map(item => Number(item.value));
+			if (selected.length < 2) { showError(new Error("Выберите минимум два факта")); return; }
+			try {
+				const data = await api("/deduce", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fact_ids: selected }) });
+				state.facts = await api("/facts") || [];
+				state.motives = await api("/motives") || [];
+				showError(new Error(data?.message || "Связь установлена — появился новый факт"));
+				renderCase();
+			} catch (error) { showError(error); }
+		}
 
 		function renderCase() {
 
@@ -2013,6 +2029,16 @@
 				}
 
 
+				<h2 class="section-title">Факты и дедукция</h2>
+				${state.facts?.length ? `
+					<div class="list">
+						${state.facts.map(fact => `<label class="hand-note" style="margin:8px 0;display:block"><input type="checkbox" data-fact-select value="${fact.id}"> <strong>${escapeHtml(fact.title)}</strong><br><span>${escapeHtml(fact.about || "")}</span></label>`).join("")}
+					</div>
+					<button class="ink-button" id="deduce-button">Связать выбранные факты →</button>
+				` : `<p class="empty-note">Факты для дедукции пока не собраны.</p>`}
+
+				${state.motives?.length ? `<h3 class="sub-title">Открытые мотивы</h3><ul class="clue-list">${state.motives.map(m => `<li><strong>${escapeHtml(m.title)}</strong> — ${escapeHtml(m.description || "")}</li>`).join("")}</ul>` : ""}
+
 				<h2 class="section-title">
 					Показания
 				</h2>
@@ -2048,6 +2074,9 @@
 
 			</div>
 		`;
+
+			const deduceButton = document.getElementById("deduce-button");
+			if (deduceButton) deduceButton.addEventListener("click", tryDeduction);
 		}
 
 
