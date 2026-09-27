@@ -172,16 +172,18 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 			Object: state.Objects[i],
 		}
 
-		if !game.PerformAction(state, object.InspectAction) {
-			http.Error(
-				w,
-				"Условия для осмотра объекта не выполнены",
-				http.StatusForbidden,
-			)
-			return
-		}
+		if !state.SearchedObjects[objID] {
+			if !game.PerformAction(state, object.InspectAction) {
+				http.Error(
+					w,
+					"Условия для осмотра объекта не выполнены",
+					http.StatusForbidden,
+				)
+				return
+			}
 
-		state.SearchedObjects[objID] = true
+			state.SearchedObjects[objID] = true
+		}
 
 		if state.FoundClues[objID] {
 			for clueIndex := range state.Clues {
