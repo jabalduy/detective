@@ -2369,7 +2369,13 @@
 				state.ending = await api(
 					"/accuse",
 					{
-						method: "POST"
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							suspect_id: state.accuseSuspectID,
+							motive_id: state.accuseMotiveID,
+							fact_ids: state.accuseFactIDs
+						})
 					}
 				);
 
