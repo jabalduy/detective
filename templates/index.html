@@ -1770,6 +1770,15 @@
 								<div class="answer-text">
 									${escapeHtml(state.selectedDialogue.answer || "")}
 								</div>
+								${state.selectedDialogue.confrontation && !state.selectedDialogue.confronted ? `
+									<div class="hand-note">
+										<span class="note-label">Противоречие</span>
+										${escapeHtml(state.selectedDialogue.confrontation.challenge || "")}
+										<br><button class="ink-button" id="confront-dialogue">Предъявить противоречие →</button>
+									</div>` : ""}
+								${state.selectedDialogue.confrontation_result ? `
+									<div class="clue-note"><span class="note-label">После конфронтации</span>
+									${escapeHtml(state.selectedDialogue.confrontation_result)}</div>` : ""}
 							`
 					: `
 								<p class="empty-note">
@@ -1814,6 +1823,9 @@
 					});
 				});
 
+
+			const confrontButton = document.getElementById("confront-dialogue");
+			if (confrontButton) confrontButton.addEventListener("click", confrontDialogue);
 
 			const backButton =
 				document.getElementById("back-suspects");
@@ -2418,12 +2430,13 @@
 			}, 1000);
 		}
 
-		function expireEvent() {
+		async function expireEvent() {
 			clearInterval(eventTimerID);
 			eventTimerID = null;
 			eventTimer.classList.remove("urgent");
 			eventOptions.querySelectorAll("button").forEach(button => button.disabled = true);
 			eventExpired.classList.remove("hidden");
+			try { await api("/event/expire", { method: "POST" }); } catch (error) { showError(error); }
 			setTimeout(() => eventOverlay.classList.add("hidden"), 1800);
 		}
 
