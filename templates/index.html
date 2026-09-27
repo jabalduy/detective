@@ -984,6 +984,8 @@
 			facts: [],
 			motives: [],
 			accuseSuspectID: null,
+			accuseMotiveID: null,
+			accuseFactIDs: [],
 			ending: null
 		};
 
@@ -1338,7 +1340,13 @@
 				const data = await api(
 					`/inspect-object?objID=${objID}`,
 					{
-						method: "POST"
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							suspect_id: state.accuseSuspectID,
+							motive_id: state.accuseMotiveID,
+							fact_ids: state.accuseFactIDs
+						})
 					}
 				);
 
@@ -2099,10 +2107,14 @@
 		async function openAccuse() {
 			try {
 				await ensureSuspects();
+				state.facts = await api("/facts") || [];
+				state.motives = await api("/motives") || [];
 
 				state.view = "accuse";
 				state.ending = null;
 				state.accuseSuspectID = null;
+				state.accuseMotiveID = null;
+				state.accuseFactIDs = [];
 
 				setTabsVisible(true);
 				setActiveTab("accuse");
@@ -2267,14 +2279,14 @@
 							</p>
 
 							<div class="hand-note">
-
-								<span class="note-label">
-									Последняя проверка
-								</span>
-
-								Убедитесь, что собрали достаточно фактов
-								и можете восстановить события вечера.
-
+								<span class="note-label">Мотив</span>
+								${state.motives.filter(m => m.suspect_id === state.accuseSuspectID).length
+									? state.motives.filter(m => m.suspect_id === state.accuseSuspectID).map(m => `<label style="display:block;margin:7px 0"><input type="radio" name="accuse-motive" value="${m.id}" ${state.accuseMotiveID === m.id ? "checked" : ""}> <strong>${escapeHtml(m.title)}</strong></label>`).join("")
+									: '<span class="empty-note">Для этого человека мотив пока не найден.</span>'}
+							</div>
+							<div class="hand-note">
+								<span class="note-label">Факты, подтверждающие версию</span>
+								${state.facts.map(f => `<label style="display:block;margin:7px 0"><input type="checkbox" data-accuse-fact value="${f.id}" ${state.accuseFactIDs.includes(f.id) ? "checked" : ""}> <strong>${escapeHtml(f.title)}</strong></label>`).join("")}
 							</div>
 
 							<button
@@ -2318,6 +2330,12 @@
 				});
 
 
+			document.querySelectorAll('input[name="accuse-motive"]').forEach(input => input.addEventListener("change", () => { state.accuseMotiveID = Number(input.value); }));
+			document.querySelectorAll("[data-accuse-fact]").forEach(input => input.addEventListener("change", () => {
+				const id = Number(input.value);
+				state.accuseFactIDs = input.checked ? [...new Set([...state.accuseFactIDs, id])] : state.accuseFactIDs.filter(item => item !== id);
+			}));
+
 			const confirm =
 				document.getElementById("confirm-accuse");
 
@@ -2332,7 +2350,8 @@
 
 		async function submitAccusation() {
 
-			if (!state.accuseSuspectID) {
+			if (!state.accuseSuspectID || !state.accuseMotiveID) {
+				showError(new Error("Выберите подозреваемого и найденный мотив"));
 				return;
 			}
 
@@ -2348,7 +2367,7 @@
 				}
 
 				state.ending = await api(
-					`/accuse?susID=${state.accuseSuspectID}`,
+					"/accuse",
 					{
 						method: "POST"
 					}
