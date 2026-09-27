@@ -1654,16 +1654,12 @@
 				);
 
 				state.selectedDialogue = data;
-				if (state.selectedDialogue?.confrontation) {
-					state.selectedDialogue.confronted = false;
-				}
-
 				const dialogue = state.dialogues.find(
 					item => item.dial_id === dialID
 				);
 
 				if (dialogue) {
-					dialogue.Asked = true;
+					dialogue.asked = true;
 				}
 
 				renderTalks();
@@ -1746,9 +1742,9 @@
 								${state.dialogues.map(dialogue => `
 									<button
 										class="question-button
-											${dialogue.Asked ? "asked" : ""}
+											${dialogue.asked ? "asked" : ""}
 											${state.selectedDialogue?.dial_id === dialogue.dial_id ? "selected" : ""}
-											${dialogue.IsClue && !dialogue.Asked ? "new-question" : ""}
+											${dialogue.is_clue && !dialogue.asked ? "new-question" : ""}
 										"
 										data-dialogue="${dialogue.dial_id}"
 									>
