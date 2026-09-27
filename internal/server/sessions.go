@@ -107,15 +107,18 @@ func newGame(caseID string) (*game.GameState, error) {
 		Facts:      caseDef.Facts,
 		Motives:    caseDef.Motives,
 
-		Clock:            clock,
-		FoundClues:       make(map[int]bool),
-		SearchedObjects:  make(map[int]bool),
-		AskedDialogues:   make(map[game.DialogueID]bool),
-		SolvedDeductions: make(map[int]bool),
-		FoundFacts:       make(map[int]bool),
-		FoundMotives:     make(map[int]bool),
+		Clock:               clock,
+		FoundClues:          make(map[int]bool),
+		SearchedObjects:     make(map[int]bool),
+		AskedDialogues:      make(map[game.DialogueID]bool),
+		SolvedDeductions:    make(map[int]bool),
+		FoundFacts:          make(map[int]bool),
+		FoundMotives:        make(map[int]bool),
+		ConfrontedDialogues: make(map[game.DialogueID]bool),
 
 		OpenDialogues: game.InitOpenDialogues(caseDef.Dialogues),
+		OpenLocations: game.InitOpenLocations(caseDef.Locations),
+		OpenObjects:   game.InitOpenObjects(caseDef.Objects),
 	}
 
 	go clock.RunTime()

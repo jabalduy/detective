@@ -15,13 +15,16 @@ type GameState struct {
 
 	ActiveDialogue *DialogueID
 
-	FoundClues       map[int]bool
-	FoundFacts       map[int]bool
-	SearchedObjects  map[int]bool
-	AskedDialogues   map[DialogueID]bool
-	OpenDialogues    map[DialogueID]bool
-	SolvedDeductions map[int]bool
-	FoundMotives     map[int]bool
+	FoundClues          map[int]bool
+	FoundFacts          map[int]bool
+	SearchedObjects     map[int]bool
+	AskedDialogues      map[DialogueID]bool
+	OpenDialogues       map[DialogueID]bool
+	SolvedDeductions    map[int]bool
+	FoundMotives        map[int]bool
+	OpenLocations       map[int]bool
+	OpenObjects         map[int]bool
+	ConfrontedDialogues map[DialogueID]bool
 }
 
 func InitOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {
@@ -39,4 +42,28 @@ func InitOpenDialogues(dialogues []Dialogue) map[DialogueID]bool {
 	}
 
 	return openDialogues
+}
+
+func InitOpenLocations(locations []Location) map[int]bool {
+	openLocations := make(map[int]bool)
+
+	for _, location := range locations {
+		if location.InitiallyOpen {
+			openLocations[location.LocID] = true
+		}
+	}
+
+	return openLocations
+}
+
+func InitOpenObjects(objects []Object) map[int]bool {
+	openObjects := make(map[int]bool)
+
+	for _, object := range objects {
+		if object.InitiallyOpen {
+			openObjects[object.LocID] = true
+		}
+	}
+
+	return openObjects
 }

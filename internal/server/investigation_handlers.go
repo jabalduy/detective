@@ -26,9 +26,19 @@ func locationsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	openLocations := []game.Location{}
+
+	for _, location := range state.Locations {
+		if !state.OpenLocations[location.LocID] {
+			continue
+		}
+
+		openLocations = append(openLocations, location)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(state.Locations)
+	err = json.NewEncoder(w).Encode(openLocations)
 	if err != nil {
 		log.Printf("locations: encode response: %v", err)
 	}
@@ -61,10 +71,37 @@ func objectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	existLocation := false
+	for _, location := range state.Locations {
+		if location.LocID == locID {
+			existLocation = true
+			break
+		}
+	}
+
+	if !existLocation {
+		http.Error(
+			w,
+			"Нет такой локации",
+			http.StatusNotFound,
+		)
+		return
+	}
+
+	if !state.OpenLocations[locID] {
+		http.Error(
+			w,
+			"Недоступная локация",
+			http.StatusForbidden,
+		)
+		return
+	}
+
 	objectsResponse := make([]game.ObjectResponse, 0)
 
 	for _, obj := range state.Objects {
-		if obj.LocID == locID {
+		if obj.LocID == locID &&
+			state.OpenObjects[obj.ObjID] {
 			newObj := game.ObjectResponse{
 				LocID:    obj.LocID,
 				Name:     obj.Name,
@@ -120,15 +157,31 @@ func inspectObjectHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		object := state.Objects[i]
+		if !state.OpenObjects[objID] {
+			http.Error(
+				w,
+				"Объект недоступен",
+				http.StatusForbidden,
+			)
+			return
+		}
 
-		state.SearchedObjects[objID] = true
+		object := state.Objects[i]
 
 		response := InspectResponse{
 			Object: state.Objects[i],
 		}
 
-		game.PerformAction(state, object.InspectAction)
+		if !game.PerformAction(state, object.InspectAction) {
+			http.Error(
+				w,
+				"Условия для осмотра объекта не выполнены",
+				http.StatusForbidden,
+			)
+			return
+		}
+
+		state.SearchedObjects[objID] = true
 
 		if state.FoundClues[objID] {
 			for clueIndex := range state.Clues {

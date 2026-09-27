@@ -11,6 +11,12 @@ func applyEffect(state *GameState, effect Effect) {
 	case "discover_motive":
 		state.FoundMotives[effect.ID] = true
 
+	case "open_location":
+		state.OpenLocations[effect.ID] = true
+
+	case "open_object":
+		state.OpenObjects[effect.ID] = true
+
 	case "open_dialogue":
 		id := DialogueID{
 			SusID:  effect.SusID,

@@ -15,6 +15,8 @@ type Object struct {
 	Key   bool   `json:"key"`
 
 	InspectAction Action `json:"inspect_action"`
+
+	InitiallyOpen bool `json:"is_open"`
 }
 
 type ObjectResponse struct {
@@ -31,6 +33,8 @@ type Location struct {
 	About  string `json:"about"`
 	Object Object `json:"-"`
 	LocID  int    `json:"loc_id"`
+
+	InitiallyOpen bool `json:"is_open"`
 }
 
 type Suspect struct {
@@ -54,6 +58,8 @@ type Dialogue struct {
 	Fact   string `json:"fact"`
 	Key    bool   `json:"key"`
 
+	Confrontation *Confrontation `json:"confrontation,omitempty"`
+
 	Action
 }
 
@@ -67,6 +73,13 @@ func (d Dialogue) ID() DialogueID {
 		SusID:  d.SusID,
 		DialID: d.DialID,
 	}
+}
+
+type Confrontation struct {
+	Challenge string `json:"challenge"`
+	Answer    string `json:"answer"`
+
+	Action
 }
 
 type Endings struct {
