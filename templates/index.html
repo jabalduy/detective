@@ -1633,6 +1633,11 @@
 				const data = await api(`/confront?susID=${state.selectedSuspectID}&dialID=${dialogue.dial_id}`, { method: "POST" });
 				dialogue.confrontation_result = data.answer || "Противоречие предъявлено.";
 				dialogue.confronted = true;
+				const cached = state.dialogues.find(item => item.dial_id === dialogue.dial_id);
+				if (cached) {
+					cached.confronted = true;
+					cached.confrontation_result = dialogue.confrontation_result;
+				}
 				renderTalks();
 				await checkActiveEvent();
 			} catch (error) { showError(error); }
@@ -1649,6 +1654,9 @@
 				);
 
 				state.selectedDialogue = data;
+				if (state.selectedDialogue?.confrontation) {
+					state.selectedDialogue.confronted = false;
+				}
 
 				const dialogue = state.dialogues.find(
 					item => item.dial_id === dialID
@@ -2332,6 +2340,8 @@
 
 						state.accuseSuspectID =
 							Number(button.dataset.accuse);
+						state.accuseMotiveID = null;
+						state.accuseFactIDs = [];
 
 						renderAccuse();
 					});
