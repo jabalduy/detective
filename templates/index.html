@@ -1914,7 +1914,7 @@
 
 		function suspectNameByID(susID) {
 			return (
-				state.suspects[susID - 1]?.name ||
+				state.suspects.find(item => item.sus_id === susID)?.name ||
 				`Подозреваемый ${susID}`
 			);
 		}
